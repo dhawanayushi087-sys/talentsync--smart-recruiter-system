@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>TalentSync | Recruiter Portal - Secure Authentication</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Space Grotesk', sans-serif;
+      background: #05070f;
+      color: #ffffff;
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .animated-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      background: radial-gradient(circle at 20% 30%, #0a0c1a, #020408);
+    }
+
+    .animated-bg::before {
+      content: '';
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(0, 210, 255, 0.08) 0%, transparent 70%);
+      animation: rotateBg 30s linear infinite;
+    }
+
+    @keyframes rotateBg {
+      0% { transform: translate(-20%, -20%) rotate(0deg); }
+      100% { transform: translate(-20%, -20%) rotate(360deg); }
+    }
+
+    .auth-container {
+      width: 100%;
+      max-width: 520px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .glass-card {
+      background: rgba(20, 28, 48, 0.65);
+      backdrop-filter: blur(16px);
+      border-radius: 40px;
+      border: 1px solid rgba(0, 210, 255, 0.35);
+      padding: 40px 32px;
+      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3);
+      transition: 0.3s;
+    }
+
+    .logo {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #00f2ff, #8b5cf6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 20px;
+    }
+
+    .tab-buttons {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 32px;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 6px;
+      border-radius: 60px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      padding: 12px 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #94a3b8;
+      cursor: pointer;
+      border-radius: 50px;
+      transition: 0.3s;
+      font-family: inherit;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, #00d4ff, #a855f7);
+      color: white;
+      box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #cbd5e6;
+    }
+
+    .input-icon {
+      position: relative;
+    }
+
+    .input-icon i {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #00f2ff;
+      font-size: 1rem;
+    }
+
+    .input-icon input, .input-icon select {
+      width: 100%;
+      padding: 14px 16px 14px 44px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(0, 210, 255, 0.4);
+      border-radius: 28px;
+      color: white;
+      font-size: 0.9rem;
+      font-family: inherit;
+      transition: 0.2s;
+    }
+
+    .input-icon input:focus {
+      outline: none;
+      border-color: #00f2ff;
+      box-shadow: 0 0 12px rgba(0, 242, 255, 0.2);
+    }
+
+    .inline-link {
+      text-align: right;
+      margin-top: 8px;
+    }
+
+    .inline-link a, .verification-note a {
+      color: #00f2ff;
+      font-size: 0.8rem;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #00d4ff, #a855f7);
+      border: none;
+      border-radius: 40px;
+      color: white;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-top: 12px;
+      font-family: inherit;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0, 212, 255, 0.4);
+    }
+
+    .google-btn {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(0, 210, 255, 0.5);
+      border-radius: 40px;
+      padding: 12px;
+      color: white;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 16px;
+      transition: 0.2s;
+    }
+
+    .google-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .divider {
+      text-align: center;
+      margin: 20px 0;
+      position: relative;
+      color: #64748b;
+      font-size: 0.8rem;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      width: 40%;
+      height: 1px;
+      background: rgba(0, 210, 255, 0.3);
+    }
+
+    .divider::before { left: 0; }
+    .divider::after { right: 0; }
+
+    .error-msg {
+      color: #ff6b6b;
+      font-size: 0.75rem;
+      margin-top: 6px;
+      display: block;
+    }
+
+    .success-msg {
+      color: #00f2ff;
+      font-size: 0.75rem;
+    }
+
+    .captcha-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #0f172a;
+      padding: 12px 16px;
+      border-radius: 40px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .captcha-code {
+      background: #1e293b;
+      padding: 8px 16px;
+      font-family: monospace;
+      font-weight: bold;
+      letter-spacing: 4px;
+      border-radius: 30px;
+      font-size: 1.2rem;
+    }
+
+    .refresh-captcha {
+      cursor: pointer;
+      color: #00f2ff;
+    }
+
+    .toast-message {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #0f172a, #1e1b4b);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(0, 210, 255, 0.5);
+      border-radius: 60px;
+      padding: 14px 28px;
+      color: white;
+      z-index: 10000;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      max-width: 90%;
+      white-space: normal;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .otp-section {
+      margin-top: 20px;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(0,210,255,0.3);
+    }
+
+    .flex-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .flex-row .btn-primary {
+      flex: 0.4;
+      margin-top: 0;
+    }
+
+    .flex-row input {
+      flex: 1;
+    }
+
+    @media (max-width: 500px) {
+      .glass-card { padding: 28px 20px; }
+      .captcha-box { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+<div class="animated-bg"></div>
+<div class="auth-container">
+  <div class="glass-card">
+    <div class="logo">TalentSync <span style="font-size: 14px;">🔐 Recruiter Portal</span></div>
+    
+    <div class="tab-buttons">
+      <button class="tab-btn active" id="loginTabBtn">🔑 Login</button>
+      <button class="tab-btn" id="signupTabBtn">📝 Sign Up (New Recruiter)</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="loginForm">
+      <form id="recruiterLoginForm">
+        <div class="form-group">
+          <label>🏢 Company Email (Official Domain Only)</label>
+          <div class="input-icon">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="loginEmail" placeholder="hr@yourcompany.com" value="hr@techcorp.io" required>
+          </div>
+          <div class="inline-link"><a href="#" id="forgotPasswordLink">Forgot Password?</a></div>
+        </div>
+        <div class="form-group">
+          <label>🔒 Password</label>
+          <div class="input-icon">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="loginPassword" placeholder="••••••••" value="admin123" required>
+          </div>
+        </div>
+        <div class="captcha-box" id="loginCaptchaContainer">
+          <span>Anti-bot:</span>
+          <span class="captcha-code" id="loginCaptchaCode">A3F9</span>
+          <i class="fas fa-sync-alt refresh-captcha" onclick="refreshLoginCaptcha()"></i>
+          <input type="text" id="loginCaptchaInput" placeholder="Enter code" style="width:120px; background:#0f172a; border:1px solid #00f2ff; border-radius:30px; padding:8px; color:white;">
+        </div>
+        <button type="submit" class="btn-primary"><i class="fas fa-sign-in-alt"></i> Login & Verify</button>
+      </form>
+      <div class="divider">OR</div>
+      <button class="google-btn" id="googleLoginBtn"><i class="fab fa-google"></i> Sign in with Google (Company Domain)</button>
+      <div id="loginMessage" style="margin-top: 16px; text-align: center; font-size: 0.8rem;"></div>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div id="signupForm" style="display: none;">
+      <form id="recruiterSignupForm">
+        <div class="form-group">
+          <label>🏛️ Company Name *</label>
+          <div class="input-icon"><i class="fas fa-building"></i><input type="text" id="companyName" placeholder="Acme Inc." required></div>
+        </div>
+        <div class="form-group">
+          <label>📧 Company Email (Official Domain) *</label>
+          <div class="input-icon"><i class="fas fa-envelope"></i><input type="email" id="signupEmail" placeholder="recruiter@company.com" required></div>
+          <div id="emailDomainWarning" class="error-msg" style="font-size:0.7rem;"></div>
+        </div>
+        <div class="form-group">
+          <label>🔑 Password *</label>
+          <div class="input-icon"><i class="fas fa-lock"></i><input type="password" id="signupPassword" placeholder="Min 8 chars" required></div>
+        </div>
+        <div class="form-group">
+          <label>✅ Confirm Password *</label>
+          <div class="input-icon"><i class="fas fa-check-circle"></i><input type="password" id="confirmPassword" placeholder="Repeat password" required></div>
+        </div>
+        <div class="form-group">
+          <label>🌐 Company Website (Optional)</label>
+          <div class="input-icon"><i class="fas fa-globe"></i><input type="url" id="companyWebsite" placeholder="https://www.company.com"></div>
+        </div>
+        <div class="form-group">
+          <label>📄 Company Registration ID / GST (Optional)</label>
+          <div class="input-icon"><i class="fas fa-id-card"></i><input type="text" id="registrationId" placeholder="GSTIN: 22XXXXX"></div>
+        </div>
+        <div class="form-group">
+          <label>🔗 LinkedIn Company Page (Optional)</label>
+          <div class="input-icon"><i class="fab fa-linkedin"></i><input type="url" id="linkedinUrl" placeholder="https://linkedin.com/company/xyz"></div>
+        </div>
+        <div class="captcha-box" id="signupCaptchaContainer">
+          <span>Captcha:</span>
+          <span class="captcha-code" id="signupCaptchaCode">X7K2</span>
+          <i class="fas fa-sync-alt refresh-captcha" onclick="refreshSignupCaptcha()"></i>
+          <input type="text" id="signupCaptchaInput" placeholder="Enter code" style="width:120px; background:#0f172a;">
+        </div>
+        <button type="submit" class="btn-primary"><i class="fas fa-user-plus"></i> Create Recruiter Account</button>
+      </form>
+      <div id="signupMessage" style="margin-top: 16px; text-align: center; font-size: 0.8rem;"></div>
+    </div>
+
+    <!-- OTP SECTION -->
+    <div id="otpSection" style="display: none; margin-top: 24px; background: rgba(0,0,0,0.4); border-radius: 28px; padding: 20px;">
+      <p><i class="fas fa-envelope-open-text"></i> <strong>Email Verification Required</strong></p>
+      <p id="otpInfoText" style="font-size:0.85rem; margin-bottom:12px;">We've sent a 6-digit OTP to your email. Please verify to continue.</p>
+      <div class="flex-row">
+        <input type="text" id="otpInput" placeholder="Enter OTP" style="padding:12px; border-radius:40px;">
+        <button id="verifyOtpBtn" class="btn-primary" style="margin:0; padding:12px 20px;">Verify</button>
+      </div>
+      <button id="resendOtpBtn" style="background: none; border:none; color:#00f2ff; margin-top:12px; cursor:pointer;">Resend OTP</button>
+      <div id="otpMessage" style="margin-top:8px;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---------- STORAGE ----------
+  let usersDB = JSON.parse(localStorage.getItem('recruitersDB')) || [];
+  let pendingVerification = null;
+  let currentOtpCode = null;
+  let pendingLoginUser = null; // Store user info for login OTP verification
+
+  // Helper: check company domain
+  function isValidCompanyDomain(email) {
+    if (!email) return false;
+    const domain = email.split('@')[1];
+    if (!domain) return false;
+    const blockedDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'protonmail.com', 'aol.com'];
+    return !blockedDomains.includes(domain.toLowerCase());
+  }
+
+  function generateOTP() {
+    return Math.floor(100000 + Math.random() * 900000).toString();
+  }
+
+  function sendOTPEmail(email, otp) {
+    showToast(`📧 OTP ${otp} sent to ${email}`, 5000);
+    console.log(`[OTP] For ${email}: ${otp}`);
+    return true;
+  }
+
+  function showToast(message, duration = 3000) {
+    const existingToast = document.querySelector('.toast-message');
+    if(existingToast) existingToast.remove();
+    const toast = document.createElement('div');
+    toast.className = 'toast-message';
+    toast.innerHTML = `<i class="fas fa-info-circle" style="margin-right:8px;"></i> ${message}`;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      setTimeout(() => toast.remove(), 400);
+    }, duration);
+  }
+
+  // SIGNUP
+  document.getElementById('recruiterSignupForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const companyName = document.getElementById('companyName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const password = document.getElementById('signupPassword').value;
+    const confirm = document.getElementById('confirmPassword').value;
+    const website = document.getElementById('companyWebsite').value.trim();
+    const regId = document.getElementById('registrationId').value.trim();
+    const linkedin = document.getElementById('linkedinUrl').value.trim();
+    const captchaInput = document.getElementById('signupCaptchaInput').value;
+    const captchaCode = document.getElementById('signupCaptchaCode').innerText;
+
+    if (!companyName || !email || !password) {
+      showToast('❌ Please fill all required fields.', 2000);
+      return;
+    }
+    if (!isValidCompanyDomain(email)) {
+      showToast('❌ Only company email domains allowed.', 3000);
+      return;
+    }
+    if (password.length < 8) {
+      showToast('❌ Password must be at least 8 characters.', 2000);
+      return;
+    }
+    if (password !== confirm) {
+      showToast('❌ Passwords do not match.', 2000);
+      return;
+    }
+    if (captchaInput !== captchaCode) {
+      showToast('❌ Invalid CAPTCHA code.', 2000);
+      return;
+    }
+    if (usersDB.find(u => u.email === email)) {
+      showToast('⚠️ Email already registered. Please login.', 2500);
+      return;
+    }
+
+    const otp = generateOTP();
+    const companyData = { companyName, website, regId, linkedin, verifiedBadge: !!regId || !!website };
+    
+    pendingVerification = {
+      email: email,
+      password: password,
+      companyData: companyData,
+      otp: otp,
+      type: 'signup'
+    };
+    currentOtpCode = otp;
+    
+    sendOTPEmail(email, otp);
+    document.getElementById('otpSection').style.display = 'block';
+    document.getElementById('otpInfoText').innerHTML = `We've sent a 6-digit OTP to <strong>${email}</strong>. Please verify to complete registration.`;
+    document.getElementById('signupMessage').innerHTML = '<span style="color:#00f2ff;">📩 OTP sent! Check console/toast for OTP.</span>';
+  });
+
+  // LOGIN Handler
+  document.getElementById('recruiterLoginForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const loginCaptcha = document.getElementById('loginCaptchaInput').value;
+    const storedCaptcha = document.getElementById('loginCaptchaCode').innerText;
+
+    if (!email || !password) {
+      showToast('Please enter email and password.', 2000);
+      return;
+    }
+    if (!isValidCompanyDomain(email)) {
+      showToast('❌ Only company email domains allowed.', 3000);
+      return;
+    }
+    if (loginCaptcha !== storedCaptcha) {
+      showToast('❌ Invalid CAPTCHA.', 2000);
+      return;
+    }
+
+    const user = usersDB.find(u => u.email === email);
+    if (!user) {
+      showToast('❌ No account found. Please sign up first.', 2500);
+      return;
+    }
+    if (user.password !== password) {
+      showToast('❌ Incorrect password.', 2000);
+      return;
+    }
+    
+    // Check if email is verified
+    if (!user.emailVerified) {
+      // Send OTP for verification
+      const otp = generateOTP();
+      currentOtpCode = otp;
+      pendingLoginUser = { email: user.email, password: user.password };
+      pendingVerification = { email: user.email, type: 'login_otp', otp: otp };
+      sendOTPEmail(user.email, otp);
+      document.getElementById('otpSection').style.display = 'block';
+      document.getElementById('otpInfoText').innerHTML = `⚠️ Your email is not verified. OTP sent to <strong>${user.email}</strong>. Verify to login.`;
+      showToast('📩 Verification required! OTP sent.', 3000);
+      return;
+    }
+
+    // Successful login
+    if (user.role === 'recruiter') {
+      localStorage.setItem('recruiter_logged_in', 'true');
+      localStorage.setItem('recruiter_name', user.companyData?.companyName || 'Recruiter');
+      localStorage.setItem('recruiter_email', user.email);
+      showToast(`🎉 Welcome back! Redirecting...`, 2000);
+      setTimeout(() => {
+        window.location.href = 'recruiter.html';
+      }, 1200);
+    } else {
+      showToast('⛔ Unauthorized: Only recruiters can access.', 2500);
+    }
+  });
+
+  // VERIFY OTP Button
+  document.getElementById('verifyOtpBtn').addEventListener('click', () => {
+    const otpEntered = document.getElementById('otpInput').value;
+    
+    if (!pendingVerification) {
+      showToast('⚠️ No pending verification request.', 2000);
+      return;
+    }
+    
+    if (otpEntered === currentOtpCode) {
+      if (pendingVerification.type === 'signup') {
+        // Create new recruiter account
+        const newRecruiter = {
+          email: pendingVerification.email,
+          password: pendingVerification.password,
+          companyData: pendingVerification.companyData,
+          emailVerified: true,
+          role: 'recruiter',
+          createdAt: new Date().toISOString()
+        };
+        usersDB.push(newRecruiter);
+        localStorage.setItem('recruitersDB', JSON.stringify(usersDB));
+        showToast('✅ Email verified! Account created. Please login.', 3500);
+        
+        // Reset and switch to login
+        document.getElementById('otpSection').style.display = 'none';
+        document.getElementById('signupMessage').innerHTML = '<span style="color:green;">✔️ Account created! You can now login.</span>';
+        pendingVerification = null;
+        currentOtpCode = null;
+        document.getElementById('otpInput').value = '';
+        
+        // Switch to login tab
+        document.getElementById('loginTabBtn').click();
+        document.getElementById('signupForm').reset();
+        
+      } else if (pendingVerification.type === 'login_otp') {
+        // Verify the user in database
+        const user = usersDB.find(u => u.email === pendingVerification.email);
+        if (user) {
+          user.emailVerified = true;
+          localStorage.setItem('recruitersDB', JSON.stringify(usersDB));
+          showToast('✅ Email verified! Please login again.', 2500);
+          
+          document.getElementById('otpSection').style.display = 'none';
+          pendingVerification = null;
+          currentOtpCode = null;
+          document.getElementById('otpInput').value = '';
+          
+          // Clear password field for security
+          document.getElementById('loginPassword').value = '';
+        } else {
+          showToast('❌ User not found.', 2000);
+        }
+      }
+    } else {
+      showToast('❌ Invalid OTP. Please try again.', 2000);
+    }
+  });
+
+  // RESEND OTP Button
+  document.getElementById('resendOtpBtn').addEventListener('click', () => {
+    if (pendingVerification && pendingVerification.email) {
+      const newOtp = generateOTP();
+      currentOtpCode = newOtp;
+      pendingVerification.otp = newOtp;
+      sendOTPEmail(pendingVerification.email, newOtp);
+      showToast(`🔄 New OTP sent to ${pendingVerification.email}`, 2500);
+    } else {
+      showToast('No pending verification request.', 1500);
+    }
+  });
+
+  // Google Login
+  document.getElementById('googleLoginBtn').addEventListener('click', () => {
+    const fakeGoogleEmail = prompt("Simulate Google Sign-In: Enter your company email:");
+    if (fakeGoogleEmail && isValidCompanyDomain(fakeGoogleEmail)) {
+      const existingUser = usersDB.find(u => u.email === fakeGoogleEmail);
+      if (existingUser && existingUser.emailVerified) {
+        localStorage.setItem('recruiter_logged_in', 'true');
+        localStorage.setItem('recruiter_name', existingUser.companyData?.companyName || 'Recruiter');
+        localStorage.setItem('recruiter_email', existingUser.email);
+        showToast('Google login success! Redirecting...', 1500);
+        setTimeout(() => window.location.href = 'recruiter.html', 1000);
+      } else if (existingUser && !existingUser.emailVerified) {
+        showToast('⚠️ Email not verified. Please verify first.', 2500);
+      } else {
+        showToast('❌ No registered recruiter. Please signup first.', 2500);
+      }
+    } else {
+      showToast('❌ Invalid or personal email domain.', 2500);
+    }
+  });
+
+  // Forgot Password
+  document.getElementById('forgotPasswordLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    const email = prompt("Enter your registered company email to reset password:");
+    if (email && isValidCompanyDomain(email)) {
+      const user = usersDB.find(u => u.email === email);
+      if (user) {
+        const newPass = prompt("Set new password (min 8 chars):");
+        if (newPass && newPass.length >= 8) {
+          user.password = newPass;
+          localStorage.setItem('recruitersDB', JSON.stringify(usersDB));
+          showToast('✅ Password reset successfully!', 2500);
+        } else showToast('Invalid password (min 8 chars).');
+      } else showToast('Email not found.');
+    } else showToast('Invalid company email.');
+  });
+
+  // Tab switching
+  document.getElementById('loginTabBtn').addEventListener('click', () => {
+    document.getElementById('loginForm').style.display = 'block';
+    document.getElementById('signupForm').style.display = 'none';
+    document.getElementById('otpSection').style.display = 'none';
+    pendingVerification = null;
+    pendingLoginUser = null;
+    currentOtpCode = null;
+    document.getElementById('loginTabBtn').classList.add('active');
+    document.getElementById('signupTabBtn').classList.remove('active');
+    refreshLoginCaptcha();
+  });
+  
+  document.getElementById('signupTabBtn').addEventListener('click', () => {
+    document.getElementById('loginForm').style.display = 'none';
+    document.getElementById('signupForm').style.display = 'block';
+    document.getElementById('otpSection').style.display = 'none';
+    pendingVerification = null;
+    pendingLoginUser = null;
+    currentOtpCode = null;
+    document.getElementById('signupTabBtn').classList.add('active');
+    document.getElementById('loginTabBtn').classList.remove('active');
+    refreshSignupCaptcha();
+  });
+
+  // CAPTCHA Functions
+  function generateCaptcha() {
+    return Math.random().toString(36).substring(2, 6).toUpperCase();
+  }
+  
+  function refreshLoginCaptcha() {
+    document.getElementById('loginCaptchaCode').innerText = generateCaptcha();
+    document.getElementById('loginCaptchaInput').value = '';
+  }
+  
+  function refreshSignupCaptcha() {
+    document.getElementById('signupCaptchaCode').innerText = generateCaptcha();
+    document.getElementById('signupCaptchaInput').value = '';
+  }
+  
+  refreshLoginCaptcha();
+  refreshSignupCaptcha();
+
+  // Domain warning
+  document.getElementById('signupEmail').addEventListener('input', (e) => {
+    const domainWarning = document.getElementById('emailDomainWarning');
+    const emailVal = e.target.value;
+    if (emailVal && !isValidCompanyDomain(emailVal)) {
+      domainWarning.innerText = '⚠️ Only company email allowed (Gmail/Yahoo etc blocked)';
+    } else {
+      domainWarning.innerText = '';
+    }
+  });
+
+  // Prepopulate demo recruiters
+  if (!usersDB.find(u => u.email === 'hr@techcorp.io')) {
+    usersDB.push({
+      email: 'hr@techcorp.io',
+      password: 'admin123',
+      companyData: { companyName: 'TechCorp', verifiedBadge: true, regId: 'GST12345' },
+      emailVerified: true,
+      role: 'recruiter'
+    });
+    localStorage.setItem('recruitersDB', JSON.stringify(usersDB));
+  }
+  
+  if (!usersDB.find(u => u.email === 'recruiter@startup.com')) {
+    usersDB.push({
+      email: 'recruiter@startup.com',
+      password: 'startup123',
+      companyData: { companyName: 'Startup Inc', verifiedBadge: false },
+      emailVerified: false,
+      role: 'recruiter'
+    });
+    localStorage.setItem('recruitersDB', JSON.stringify(usersDB));
+  }
+</script>
+</body>
+</html>

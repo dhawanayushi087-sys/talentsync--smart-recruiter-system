@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>TalentSync | Candidate Portal</title>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      background: radial-gradient(circle at 20% 30%, #0a0f1e, #03050b);
+      color: #f0f3fa;
+      overflow-x: hidden;
+    }
+
+    /* Animated background */
+    body::before {
+      content: '';
+      position: fixed;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(59, 75, 255, 0.3), transparent 70%);
+      top: -100px;
+      left: -100px;
+      border-radius: 50%;
+      animation: float 20s ease-in-out infinite;
+      z-index: 0;
+    }
+
+    body::after {
+      content: '';
+      position: fixed;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(122, 74, 255, 0.25), transparent 70%);
+      bottom: -150px;
+      right: -150px;
+      border-radius: 50%;
+      animation: float 25s ease-in-out infinite reverse;
+      z-index: 0;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(30px, -20px) scale(1.05); }
+    }
+
+    /* Dashboard Layout */
+    .dashboard {
+      display: flex;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(14px);
+      border-right: 1px solid rgba(59, 130, 246, 0.25);
+      padding: 32px 20px;
+      position: fixed;
+      height: 100vh;
+      z-index: 100;
+      transition: all 0.3s;
+      box-shadow: 8px 0 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 48px;
+      padding-left: 12px;
+    }
+
+    .logo-icon {
+      background: linear-gradient(135deg, #3b82f6, #a855f7);
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .logo-icon i {
+      font-size: 22px;
+      color: white;
+    }
+
+    .logo-text {
+      font-size: 1.7rem;
+      font-weight: 800;
+      background: linear-gradient(120deg, #fff, #94a3f8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .nav-links {
+      list-style: none;
+      margin-top: 20px;
+    }
+
+    .nav-links li {
+      margin: 16px 0;
+      padding: 12px 18px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 500;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      color: #b9c7e6;
+    }
+
+    .nav-links li i {
+      width: 28px;
+      font-size: 1.3rem;
+    }
+
+    .nav-links li:hover {
+      background: rgba(59, 130, 246, 0.2);
+      color: white;
+      transform: translateX(5px);
+    }
+
+    .nav-active {
+      background: linear-gradient(95deg, rgba(59, 130, 246, 0.25), rgba(139, 92, 246, 0.15));
+      border-left: 3px solid #3b82f6;
+      color: white !important;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      margin-left: 280px;
+      padding: 28px 36px;
+      transition: margin-left 0.3s ease;
+    }
+
+    /* Top Nav */
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 36px;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(12px);
+      padding: 12px 28px;
+      border-radius: 60px;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .welcome-area h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+
+    .welcome-area p {
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    .profile-avatar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      padding: 6px 18px 6px 12px;
+      border-radius: 40px;
+      cursor: pointer;
+    }
+
+    .avatar-img {
+      background: linear-gradient(145deg, #3b82f6, #8b5cf6);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+
+    .menu-toggle {
+      display: none;
+      font-size: 26px;
+      cursor: pointer;
+      background: rgba(59, 130, 246, 0.2);
+      padding: 8px 12px;
+      border-radius: 30px;
+    }
+
+    /* Glass Card */
+    .glass-card {
+      background: rgba(20, 28, 48, 0.65);
+      backdrop-filter: blur(14px);
+      border-radius: 28px;
+      padding: 28px 26px;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.4);
+    }
+
+    /* Filter Bar */
+    .filter-bar {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .filter-chip {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      padding: 8px 20px;
+      border-radius: 40px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      color: #cbd5e6;
+    }
+
+    .filter-chip:hover {
+      background: rgba(59, 130, 246, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .filter-chip.active {
+      background: linear-gradient(135deg, #3b82f6, #a855f7);
+      border-color: transparent;
+      color: white;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    /* Jobs Grid */
+    .jobs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 24px;
+      margin-top: 24px;
+    }
+
+    .job-card {
+      background: rgba(18, 25, 45, 0.7);
+      backdrop-filter: blur(8px);
+      border-radius: 28px;
+      padding: 22px;
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      transition: all 0.3s ease;
+    }
+
+    .job-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(59, 130, 246, 0.6);
+      box-shadow: 0 20px 30px -12px rgba(59, 130, 246, 0.4);
+    }
+
+    .badge-group {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      background: rgba(34, 197, 94, 0.2);
+      color: #4ade80;
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      font-weight: 600;
+    }
+
+    .badge.category {
+      background: rgba(139, 92, 246, 0.25);
+      color: #c084fc;
+    }
+
+    .job-title {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin: 8px 0 6px;
+    }
+
+    .company {
+      color: #cbd5e1;
+      font-size: 0.9rem;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .job-detail {
+      font-size: 0.85rem;
+      margin: 8px 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      color: #9ca3af;
+    }
+
+    .skills-tag {
+      display: inline-block;
+      background: rgba(139, 92, 246, 0.2);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      margin: 4px 4px 0 0;
+    }
+
+    .apply-btn-sm {
+      margin-top: 18px;
+      width: 100%;
+      background: rgba(59, 130, 246, 0.2);
+      border: 1px solid #3b82f6;
+      padding: 10px;
+      border-radius: 40px;
+      font-weight: 600;
+      transition: all 0.2s;
+      cursor: pointer;
+      color: white;
+    }
+
+    .apply-btn-sm:hover {
+      background: #3b82f6;
+      transform: translateY(-2px);
+    }
+
+    .app-list {
+      list-style: none;
+    }
+
+    .app-list li {
+      background: rgba(59, 130, 246, 0.1);
+      margin: 12px 0;
+      padding: 14px 20px;
+      border-radius: 60px;
+      border-left: 4px solid #3b82f6;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .modal-overlay.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .candidate-modal {
+      background: rgba(18, 28, 48, 0.98);
+      backdrop-filter: blur(20px);
+      border-radius: 40px;
+      max-width: 550px;
+      width: 90%;
+      border: 1px solid rgba(59, 130, 246, 0.6);
+      padding: 28px 30px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+    }
+
+    .modal-header h3 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff, #a78bfa);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .close-modal {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #f0f3fa;
+      width: 40px;
+      height: 40px;
+      border-radius: 30px;
+    }
+
+    .close-modal:hover {
+      background: #ef4444;
+    }
+
+    .input-group {
+      position: relative;
+      margin: 18px 0;
+    }
+
+    .input-group i {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #60a5fa;
+    }
+
+    .input-group input,
+    .input-group textarea {
+      width: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(59, 130, 246, 0.5);
+      border-radius: 20px;
+      padding: 14px 20px 14px 48px;
+      color: white;
+      font-size: 0.95rem;
+    }
+
+    .upload-label {
+      background: rgba(59, 130, 246, 0.2);
+      border: 1px dashed #3b82f6;
+      border-radius: 30px;
+      padding: 12px 20px;
+      text-align: center;
+      cursor: pointer;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .job-preview {
+      background: rgba(59, 130, 246, 0.1);
+      padding: 12px;
+      border-radius: 20px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 860px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .main-content {
+        margin-left: 0;
+      }
+      .menu-toggle {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="dashboard">
+  <div class="sidebar" id="sidebar">
+    <div class="logo-area">
+      <div class="logo-icon"><i class="fas fa-brain"></i></div>
+      <span class="logo-text">TalentSync</span>
+    </div>
+    <ul class="nav-links">
+      <li data-section="profile" class="nav-active"><i class="fas fa-user-astronaut"></i> <span>My Profile</span></li>
+      <li data-section="jobs"><i class="fas fa-briefcase"></i> <span>Opportunities</span></li>
+      <li data-section="status"><i class="fas fa-chart-line"></i> <span>Applications</span></li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <div class="top-nav">
+      <div class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></div>
+      <div class="welcome-area">
+        <h2>Welcome back, <span id="welcomeName">Talent</span> ✨</h2>
+        <p>Find your dream job with AI-powered matching</p>
+      </div>
+      <div class="profile-avatar" id="avatarBtn">
+        <div class="avatar-img" id="avatarInitials">JD</div>
+        <i class="fas fa-chevron-down"></i>
+      </div>
+    </div>
+
+    <!-- PROFILE SECTION -->
+    <div id="profileSection" class="glass-card">
+      <h3><i class="fas fa-id-card"></i> Professional Profile</h3>
+      <p style="margin-bottom: 16px;">Complete your profile to boost visibility</p>
+      <div class="input-group"><i class="fas fa-user"></i><input type="text" id="name" placeholder="Full Name"></div>
+      <div class="input-group"><i class="fas fa-envelope"></i><input type="email" id="email" placeholder="Email address"></div>
+      <div class="input-group"><i class="fas fa-comment"></i><textarea id="about" placeholder="Tell about yourself"></textarea></div>
+      <div class="input-group"><i class="fas fa-code"></i><input type="text" id="skills" placeholder="Skills (React, Python, UI/UX)"></div>
+      <div class="input-group"><i class="fas fa-bullseye"></i><input type="text" id="job" placeholder="Preferred Job Role"></div>
+      <button class="apply-btn-sm" onclick="saveProfileData()" style="background:#3b82f6;"><i class="fas fa-save"></i> Save Profile</button>
+    </div>
+
+    <!-- JOBS SECTION WITH FILTERS -->
+    <div id="jobsSection" class="glass-card" style="display: none;">
+      <h3><i class="fas fa-rocket"></i> 🔥 Latest Opportunities</h3>
+      <p style="margin-bottom: 16px;">Jobs posted by verified recruiters</p>
+      
+      <!-- FILTER BUTTONS -->
+      <div class="filter-bar">
+        <button class="filter-chip active" data-category="all">📋 All Jobs</button>
+        <button class="filter-chip" data-category="technical">💻 Technical</button>
+        <button class="filter-chip" data-category="hr">👥 HR</button>
+        <button class="filter-chip" data-category="commercial">📊 Commercial</button>
+        <button class="filter-chip" data-category="law">⚖️ Law</button>
+        <button class="filter-chip" data-category="marketing">📢 Marketing</button>
+        <button class="filter-chip" data-category="finance">💰 Finance</button>
+        <button class="filter-chip" data-category="design">🎨 Design</button>
+      </div>
+      
+      <div id="jobsContainer" class="jobs-grid"></div>
+      <div id="noJobsMsg" style="display: none; text-align:center; padding:40px;">📭 No jobs found in this category</div>
+    </div>
+
+    <!-- APPLICATIONS SECTION -->
+    <div id="statusSection" class="glass-card" style="display: none;">
+      <h3><i class="fas fa-paper-plane"></i> Your Applications</h3>
+      <ul class="app-list" id="applicationList"></ul>
+    </div>
+  </div>
+</div>
+
+<!-- APPLICATION MODAL -->
+<div id="candidateModal" class="modal-overlay">
+  <div class="candidate-modal">
+    <div class="modal-header">
+      <h3><i class="fas fa-file-alt"></i> Apply for Position</h3>
+      <button class="close-modal" id="closeModalBtn">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="job-preview" id="jobPreviewModal"></div>
+      <div class="input-group"><i class="fas fa-user-tie"></i><input type="text" id="candFullName" placeholder="Full Name *"></div>
+      <div class="input-group"><i class="fas fa-envelope"></i><input type="email" id="candEmail" placeholder="Email Address *"></div>
+      <div class="input-group"><i class="fas fa-phone-alt"></i><input type="tel" id="candPhone" placeholder="Phone Number"></div>
+      <div class="input-group"><i class="fas fa-map-marker-alt"></i><input type="text" id="candLocation" placeholder="Current Location"></div>
+      <div class="input-group"><i class="fas fa-code"></i><input type="text" id="candSkills" placeholder="Your Skills (comma separated)"></div>
+      <div class="input-group"><i class="fas fa-paperclip"></i>
+        <label class="upload-label" for="resumeFile"><i class="fas fa-cloud-upload-alt"></i> Upload Resume</label>
+        <input type="file" id="resumeFile" accept=".pdf,.doc,.docx" style="display: none;">
+        <span id="resumeName" style="font-size:12px; display:block; margin-top:5px;">No file chosen</span>
+      </div>
+      <div class="input-group"><i class="fas fa-comment-dots"></i><textarea id="candCoverMsg" rows="3" placeholder="Why are you a great fit?"></textarea></div>
+      <button class="apply-btn-sm" id="submitApplicationBtn" style="background:#3b82f6;"><i class="fas fa-paper-plane"></i> Submit Application</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ============ LOGOUT REDIRECT TO INDEX.HTML ============
+  function performLogout() {
+    localStorage.removeItem('currentUser');
+    window.location.href = 'index.html';
+  }
+
+  // Check if user is logged in, redirect to index.html if not (but preserve the requirement)
+  function checkLoginStatus() {
+    const currentUser = localStorage.getItem('currentUser');
+    if (!currentUser) {
+      // Instead of login.html, go to index.html as requested
+      window.location.href = 'index.html';
+      return false;
+    }
+    return true;
+  }
+
+  // ============ JOB CATEGORY MAPPING ============
+  const categoryKeywords = {
+    technical: ['developer', 'engineer', 'programmer', 'software', 'devops', 'full stack', 'frontend', 'backend', 'python', 'java', 'react', 'node', 'ai', 'ml', 'data science', 'cloud', 'technical'],
+    hr: ['hr', 'human resource', 'recruiter', 'talent acquisition', 'people ops', 'hrbp', 'hr manager', 'recruitment'],
+    commercial: ['sales', 'business development', 'bd', 'account manager', 'commercial', 'client relationship', 'key account', 'b2b', 'b2c'],
+    law: ['lawyer', 'legal', 'attorney', 'compliance', 'corporate law', 'legal counsel', 'paralegal', 'law'],
+    marketing: ['marketing', 'seo', 'social media', 'content writer', 'digital marketing', 'brand', 'growth', 'product marketing'],
+    finance: ['finance', 'accountant', 'financial analyst', 'ca', 'cfa', 'audit', 'tax', 'investment', 'banking'],
+    design: ['designer', 'ui', 'ux', 'graphic design', 'product design', 'visual design', 'creative']
+  };
+
+  function getJobCategory(jobTitle, department) {
+    const text = (jobTitle + ' ' + department).toLowerCase();
+    for (const [category, keywords] of Object.entries(categoryKeywords)) {
+      for (const keyword of keywords) {
+        if (text.includes(keyword)) {
+          return category;
+        }
+      }
+    }
+    return 'technical';
+  }
+
+  // ============ DATA STORAGE ============
+  let allRecruiterJobs = [];
+  let candidateApplications = [];
+  let currentJobToApply = null;
+  let currentCategory = 'all';
+  let currentUsername = null;
+
+  // ============ GET CURRENT USER INFO ============
+  function getCurrentUser() {
+    const currentUser = localStorage.getItem('currentUser');
+    if (currentUser) {
+      try {
+        return JSON.parse(currentUser);
+      } catch(e) {}
+    }
+    return null;
+  }
+
+  function getCurrentUserKey() {
+    const user = getCurrentUser();
+    if (user && user.username) {
+      return `smart_profile_${user.username}`;
+    }
+    return 'smart_profile';
+  }
+
+  function loadApplicationsForUser() {
+    const user = getCurrentUser();
+    if (user && user.username) {
+      const savedApps = localStorage.getItem(`candidate_applications_${user.username}`);
+      if (savedApps) {
+        candidateApplications = JSON.parse(savedApps);
+      } else {
+        candidateApplications = [];
+      }
+    } else {
+      candidateApplications = JSON.parse(localStorage.getItem('candidate_my_applications')) || [];
+    }
+  }
+
+  function saveApplicationsForUser() {
+    const user = getCurrentUser();
+    if (user && user.username) {
+      localStorage.setItem(`candidate_applications_${user.username}`, JSON.stringify(candidateApplications));
+    } else {
+      localStorage.setItem('candidate_my_applications', JSON.stringify(candidateApplications));
+    }
+  }
+
+  // ============ PROFILE FUNCTIONS ============
+  function saveProfileData() {
+    const currentUserKey = getCurrentUserKey();
+    const profile = {
+      name: document.getElementById('name').value,
+      email: document.getElementById('email').value,
+      about: document.getElementById('about').value,
+      skills: document.getElementById('skills').value,
+      job: document.getElementById('job').value
+    };
+    localStorage.setItem(currentUserKey, JSON.stringify(profile));
+    alert('✅ Profile saved successfully!');
+    updateWelcomeName();
+    updateAvatarInitials();
+  }
+
+  function loadProfileData() {
+    const currentUserKey = getCurrentUserKey();
+    const saved = localStorage.getItem(currentUserKey);
+    if (saved) {
+      const p = JSON.parse(saved);
+      if (p.name) document.getElementById('name').value = p.name;
+      if (p.email) document.getElementById('email').value = p.email;
+      if (p.about) document.getElementById('about').value = p.about;
+      if (p.skills) document.getElementById('skills').value = p.skills;
+      if (p.job) document.getElementById('job').value = p.job;
+    } else {
+      document.getElementById('name').value = '';
+      document.getElementById('email').value = '';
+      document.getElementById('about').value = '';
+      document.getElementById('skills').value = '';
+      document.getElementById('job').value = '';
+    }
+    updateWelcomeName();
+    updateAvatarInitials();
+  }
+
+  function updateWelcomeName() {
+    const user = getCurrentUser();
+    if (user && user.username) {
+      document.getElementById('welcomeName').innerText = user.username;
+    } else {
+      const currentUserKey = getCurrentUserKey();
+      const profile = localStorage.getItem(currentUserKey);
+      let name = "Talent";
+      if (profile) {
+        try {
+          const p = JSON.parse(profile);
+          if (p.name && p.name.trim() !== "") name = p.name.split(' ')[0];
+        } catch(e) {}
+      }
+      document.getElementById('welcomeName').innerText = name;
+    }
+  }
+
+  function updateAvatarInitials() {
+    const user = getCurrentUser();
+    if (user && user.username) {
+      const initials = user.username.substring(0, 2).toUpperCase();
+      document.getElementById('avatarInitials').innerText = initials;
+    } else {
+      const currentUserKey = getCurrentUserKey();
+      const profile = localStorage.getItem(currentUserKey);
+      let initials = "JD";
+      if (profile) {
+        try {
+          const p = JSON.parse(profile);
+          if (p.name && p.name.trim() !== "") {
+            const parts = p.name.split(' ');
+            initials = (parts[0][0] + (parts[1]?.[0] || '')).toUpperCase();
+          }
+        } catch(e) {}
+      }
+      document.getElementById('avatarInitials').innerText = initials;
+    }
+  }
+
+  // ============ FETCH ALL JOBS ============
+  function fetchAllRecruiterJobs() {
+    allRecruiterJobs = [];
+    
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('recruiter_jobs_')) {
+        try {
+          const jobs = JSON.parse(localStorage.getItem(key));
+          if (jobs && jobs.length > 0) {
+            allRecruiterJobs.push(...jobs);
+          }
+        } catch(e) {}
+      }
+    }
+    
+    const oldJobs = localStorage.getItem('recruiter_jobs');
+    if (oldJobs) {
+      try {
+        const jobs = JSON.parse(oldJobs);
+        if (jobs && jobs.length > 0) allRecruiterJobs.push(...jobs);
+      } catch(e) {}
+    }
+    
+    allRecruiterJobs = allRecruiterJobs.map(job => ({
+      ...job,
+      category: getJobCategory(job.jobTitle, job.department)
+    }));
+    
+    const uniqueJobs = [];
+    const jobIds = new Set();
+    for (const job of allRecruiterJobs) {
+      if (!jobIds.has(job.id)) {
+        jobIds.add(job.id);
+        uniqueJobs.push(job);
+      }
+    }
+    allRecruiterJobs = uniqueJobs;
+    
+    renderJobsList();
+  }
+
+  function renderJobsList() {
+    const container = document.getElementById('jobsContainer');
+    const noJobsMsg = document.getElementById('noJobsMsg');
+    if (!container) return;
+    
+    let filteredJobs = allRecruiterJobs;
+    if (currentCategory !== 'all') {
+      filteredJobs = allRecruiterJobs.filter(job => job.category === currentCategory);
+    }
+    
+    if (filteredJobs.length === 0) {
+      container.innerHTML = '';
+      if (noJobsMsg) noJobsMsg.style.display = 'block';
+      return;
+    }
+    
+    if (noJobsMsg) noJobsMsg.style.display = 'none';
+    container.innerHTML = '';
+    
+    filteredJobs.forEach(job => {
+      const card = document.createElement('div');
+      card.className = 'job-card';
+      const skillsArray = job.requiredSkills ? job.requiredSkills.split(',').map(s => s.trim()).filter(s => s) : [];
+      const skillsHtml = skillsArray.slice(0, 4).map(skill => `<span class="skills-tag">${escapeHtml(skill)}</span>`).join('');
+      
+      card.innerHTML = `
+        <div class="badge-group">
+          <span class="badge"><i class="fas fa-check-circle"></i> Verified</span>
+          <span class="badge category"><i class="fas fa-tag"></i> ${getCategoryIcon(job.category)} ${job.category.toUpperCase()}</span>
+        </div>
+        <div class="job-title">${escapeHtml(job.jobTitle)}</div>
+        <div class="company"><i class="fas fa-building"></i> ${escapeHtml(job.companyName)}</div>
+        <div class="job-detail">
+          <span><i class="fas fa-map-marker-alt"></i> ${escapeHtml(job.location || 'Remote')}</span>
+          <span><i class="fas fa-code-branch"></i> ${escapeHtml(job.department || 'General')}</span>
+        </div>
+        ${skillsHtml ? `<div><i class="fas fa-tags"></i> ${skillsHtml}</div>` : ''}
+        <div class="job-detail"><i class="fas fa-calendar"></i> Posted: ${escapeHtml(job.postedAt || 'Recently')}</div>
+        <button class="apply-btn-sm" data-job='${JSON.stringify(job).replace(/'/g, "&#39;")}'><i class="fas fa-send"></i> Apply Now</button>
+      `;
+      container.appendChild(card);
+    });
+    
+    document.querySelectorAll('.apply-btn-sm').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const jobData = btn.getAttribute('data-job');
+        if (jobData) {
+          try {
+            currentJobToApply = JSON.parse(jobData);
+            openApplicationModal(currentJobToApply);
+          } catch(err) {}
+        }
+      });
+    });
+  }
+  
+  function getCategoryIcon(category) {
+    const icons = { technical: '💻', hr: '👥', commercial: '📊', law: '⚖️', marketing: '📢', finance: '💰', design: '🎨' };
+    return icons[category] || '📋';
+  }
+
+  function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  function openApplicationModal(job) {
+    if (!job) return;
+    const modal = document.getElementById('candidateModal');
+    const previewDiv = document.getElementById('jobPreviewModal');
+    if (previewDiv) {
+      previewDiv.innerHTML = `
+        <div><strong>${escapeHtml(job.jobTitle)}</strong><br>
+        <span style="color:#94a3b8;">${escapeHtml(job.companyName)}</span></div>
+        <div style="margin-top: 8px; font-size:0.8rem; color:#60a5fa;">Required: ${escapeHtml(job.requiredSkills || 'Not specified')}</div>
+      `;
+    }
+    
+    const currentUserKey = getCurrentUserKey();
+    const profile = localStorage.getItem(currentUserKey);
+    const user = getCurrentUser();
+    
+    if (profile) {
+      try {
+        const p = JSON.parse(profile);
+        if (p.name) document.getElementById('candFullName').value = p.name;
+        if (p.email) document.getElementById('candEmail').value = p.email;
+        if (p.skills) document.getElementById('candSkills').value = p.skills;
+      } catch(e) {}
+    }
+    if (user && user.email && !document.getElementById('candEmail').value) {
+      document.getElementById('candEmail').value = user.email;
+    }
+    
+    document.getElementById('candPhone').value = '';
+    document.getElementById('candLocation').value = '';
+    document.getElementById('candCoverMsg').value = '';
+    document.getElementById('resumeFile').value = '';
+    document.getElementById('resumeName').innerText = 'No file chosen';
+    modal.classList.add('active');
+  }
+
+  function closeModal() {
+    const modal = document.getElementById('candidateModal');
+    if (modal) modal.classList.remove('active');
+    currentJobToApply = null;
+  }
+
+  function submitApplication() {
+    if (!currentJobToApply) { alert("Please select a job to apply."); return; }
+    const fullName = document.getElementById('candFullName').value.trim();
+    const email = document.getElementById('candEmail').value.trim();
+    if (!fullName || !email) { alert("❌ Please provide your full name and email address."); return; }
+    
+    const alreadyApplied = candidateApplications.some(app => 
+      app.jobTitle === currentJobToApply.jobTitle && app.companyName === currentJobToApply.companyName && app.candidateEmail === email
+    );
+    if (alreadyApplied) { alert(`⚠️ You have already applied for "${currentJobToApply.jobTitle}".`); closeModal(); return; }
+    
+    const phone = document.getElementById('candPhone').value.trim();
+    const location = document.getElementById('candLocation').value.trim();
+    const coverMsg = document.getElementById('candCoverMsg').value.trim();
+    const resumeFile = document.getElementById('resumeFile').files[0];
+    const resumeFileName = resumeFile ? resumeFile.name : null;
+    const skillsInput = document.getElementById('candSkills').value.trim();
+    
+    const newApplication = {
+      jobTitle: currentJobToApply.jobTitle, companyName: currentJobToApply.companyName, department: currentJobToApply.department,
+      requiredSkills: currentJobToApply.requiredSkills, candidateName: fullName, candidateEmail: email,
+      candidateSkills: skillsInput, phone: phone, candidateLocation: location, coverMessage: coverMsg,
+      resumeFile: resumeFileName, appliedAt: new Date().toLocaleString(), status: "Pending Review"
+    };
+    candidateApplications.push(newApplication);
+    saveApplicationsForUser();
+    
+    let companyKey = currentJobToApply.companyName.toLowerCase().replace(/[^a-z0-9]/g, '_');
+    let companyAppsKey = `company_applications_${companyKey}`;
+    let companyApps = JSON.parse(localStorage.getItem(companyAppsKey)) || [];
+    companyApps.push(newApplication);
+    localStorage.setItem(companyAppsKey, JSON.stringify(companyApps));
+    
+    const currentUserKey = getCurrentUserKey();
+    const profile = localStorage.getItem(currentUserKey);
+    let profileData = profile ? JSON.parse(profile) : {};
+    if (!profileData.name && fullName) profileData.name = fullName;
+    if (!profileData.email && email) profileData.email = email;
+    if (!profileData.skills && skillsInput) profileData.skills = skillsInput;
+    localStorage.setItem(currentUserKey, JSON.stringify(profileData));
+    
+    alert(`✅ Application submitted for "${currentJobToApply.jobTitle}"!`);
+    if (document.getElementById('statusSection').style.display !== 'none') renderApplications();
+    closeModal();
+  }
+  
+  function renderApplications() {
+    const container = document.getElementById('applicationList');
+    if (!container) return;
+    if (candidateApplications.length === 0) { container.innerHTML = '<li>✨ No applications yet. Browse opportunities and apply!</li>'; return; }
+    container.innerHTML = '';
+    candidateApplications.forEach(app => {
+      const li = document.createElement('li');
+      li.innerHTML = `<div style="display:flex; justify-content:space-between; flex-wrap:wrap;"><strong>${escapeHtml(app.jobTitle)}</strong><span style="font-size:11px;">${app.appliedAt}</span></div><div style="font-size:13px;">${escapeHtml(app.companyName)}</div><div style="font-size:11px; color:#60a5fa;">Status: ${app.status || 'Under Review'}</div>`;
+      container.appendChild(li);
+    });
+  }
+  
+  function switchSection(sectionId) {
+    document.getElementById('profileSection').style.display = 'none';
+    document.getElementById('jobsSection').style.display = 'none';
+    document.getElementById('statusSection').style.display = 'none';
+    document.getElementById(sectionId).style.display = 'block';
+    document.querySelectorAll('.nav-links li').forEach(li => li.classList.remove('nav-active'));
+    const map = { profile: 'profileSection', jobs: 'jobsSection', status: 'statusSection' };
+    for (let [key, value] of Object.entries(map)) if (value === sectionId) { const activeLi = document.querySelector(`[data-section="${key}"]`); if (activeLi) activeLi.classList.add('nav-active'); }
+    if (sectionId === 'jobsSection') fetchAllRecruiterJobs();
+    if (sectionId === 'statusSection') renderApplications();
+  }
+  
+  function setupFilters() {
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        currentCategory = chip.getAttribute('data-category');
+        renderJobsList();
+      });
+    });
+  }
+  
+  document.querySelectorAll('.nav-links li').forEach(li => {
+    li.addEventListener('click', () => {
+      const section = li.getAttribute('data-section');
+      if (section === 'profile') switchSection('profileSection');
+      else if (section === 'jobs') switchSection('jobsSection');
+      else if (section === 'status') switchSection('statusSection');
+      if (window.innerWidth < 860) document.getElementById('sidebar').classList.remove('open');
+    });
+  });
+  
+  document.getElementById('menuToggle')?.addEventListener('click', () => { document.getElementById('sidebar').classList.toggle('open'); });
+  document.getElementById('closeModalBtn')?.addEventListener('click', closeModal);
+  document.getElementById('submitApplicationBtn')?.addEventListener('click', submitApplication);
+  document.getElementById('candidateModal')?.addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+  document.getElementById('resumeFile')?.addEventListener('change', function(e) { const fileName = e.target.files[0] ? e.target.files[0].name : 'No file chosen'; document.getElementById('resumeName').innerText = fileName; });
+  document.getElementById('avatarBtn')?.addEventListener('click', () => { if (confirm('Do you want to logout?')) { performLogout(); } });
+  
+  window.onload = () => {
+    if (!checkLoginStatus()) return;
+    loadProfileData();
+    loadApplicationsForUser();
+    fetchAllRecruiterJobs();
+    renderApplications();
+    switchSection('profileSection');
+    setupFilters();
+  };
+</script>
+</body>
+</html>

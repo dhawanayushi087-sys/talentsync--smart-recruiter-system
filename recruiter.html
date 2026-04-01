@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>SmartRecruiter | Recruiter Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Poppins', sans-serif;
+      background: radial-gradient(circle at 20% 30%, #0a0c14, #03050b);
+      min-height: 100vh;
+      color: #f0f3fa;
+      overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+
+    .dashboard { display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: 280px;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(14px);
+      border-right: 1px solid rgba(59,130,246,0.25);
+      padding: 32px 20px;
+      position: fixed;
+      height: 100vh;
+      z-index: 100;
+      transition: all 0.3s;
+      box-shadow: 8px 0 30px rgba(0,0,0,0.3);
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 48px;
+      padding-left: 12px;
+    }
+    .logo-icon {
+      background: linear-gradient(135deg, #3b82f6, #a855f7);
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 20px rgba(59,130,246,0.4);
+    }
+    .logo-text {
+      font-size: 1.7rem;
+      font-weight: 800;
+      background: linear-gradient(120deg, #fff, #94a3f8);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .nav-links {
+      list-style: none;
+      margin-top: 20px;
+    }
+    .nav-links li {
+      margin: 16px 0;
+      padding: 12px 18px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      color: #b9c7e6;
+    }
+    .nav-links li:hover {
+      background: rgba(59,130,246,0.2);
+      color: white;
+      transform: translateX(5px);
+    }
+    .nav-active {
+      background: linear-gradient(95deg, rgba(59,130,246,0.25), rgba(139,92,246,0.15));
+      border-left: 3px solid #3b82f6;
+      color: white !important;
+    }
+
+    .main-content {
+      flex: 1;
+      margin-left: 280px;
+      padding: 28px 36px;
+      transition: margin-left 0.3s ease;
+    }
+
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 36px;
+      background: rgba(15, 23, 42, 0.5);
+      backdrop-filter: blur(12px);
+      padding: 12px 28px;
+      border-radius: 60px;
+      border: 1px solid rgba(59,130,246,0.3);
+    }
+    .welcome-area h2 { font-size: 1.5rem; font-weight: 600; }
+    .welcome-area p { font-size: 0.85rem; color: #94a3b8; }
+
+    .profile-dropdown { position: relative; z-index: 1000; }
+    .profile-avatar {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(255,255,255,0.05);
+      padding: 6px 18px 6px 12px;
+      border-radius: 40px;
+      cursor: pointer;
+    }
+    .profile-avatar:hover { background: rgba(59,130,246,0.3); }
+    .avatar-img {
+      background: linear-gradient(145deg, #3b82f6, #8b5cf6);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+    .dropdown-menu {
+      position: absolute;
+      top: calc(100% + 12px);
+      right: 0;
+      background: rgba(15, 23, 42, 0.98);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      border: 1px solid rgba(59,130,246,0.5);
+      min-width: 240px;
+      display: none;
+      z-index: 1001;
+      box-shadow: 0 20px 35px rgba(0,0,0,0.4);
+    }
+    .dropdown-menu.active { display: block; animation: fadeIn 0.2s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    .dropdown-item { padding: 14px 20px; display: flex; align-items: center; gap: 12px; cursor: pointer; }
+    .dropdown-item:hover { background: rgba(59,130,246,0.25); color: white; }
+    .dropdown-header { padding: 12px 20px; border-bottom: 1px solid rgba(59,130,246,0.2); }
+
+    .menu-toggle { display: none; font-size: 26px; cursor: pointer; background: rgba(59,130,246,0.2); padding: 8px 12px; border-radius: 30px; }
+
+    .glass-card {
+      background: rgba(20, 28, 48, 0.65);
+      border-radius: 28px;
+      padding: 28px 26px;
+      border: 1px solid rgba(59,130,246,0.3);
+      box-shadow: 0 20px 35px -12px rgba(0,0,0,0.4);
+    }
+
+    .input-group { position: relative; margin: 18px 0; }
+    .input-group i {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #60a5fa;
+    }
+    .input-group input, .input-group textarea, .input-group select {
+      width: 100%;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(59,130,246,0.5);
+      border-radius: 20px;
+      padding: 14px 20px 14px 48px;
+      color: white;
+      font-size: 0.95rem;
+    }
+    .input-group textarea { resize: vertical; min-height: 90px; }
+
+    .gradient-btn {
+      background: linear-gradient(95deg, #2563eb, #7c3aed);
+      border: none;
+      padding: 12px 28px;
+      border-radius: 40px;
+      font-weight: 600;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 5px 15px rgba(37,99,235,0.3);
+    }
+    .gradient-btn:hover { transform: scale(1.02); }
+
+    .jobs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; margin-top: 24px; }
+    .job-card {
+      background: rgba(18, 25, 45, 0.7);
+      backdrop-filter: blur(8px);
+      border-radius: 28px;
+      padding: 20px;
+      border: 1px solid rgba(59,130,246,0.25);
+      transition: all 0.3s ease;
+    }
+    .job-card:hover { transform: translateY(-5px); border-color: rgba(59,130,246,0.5); }
+
+    .candidate-card {
+      background: rgba(20, 28, 48, 0.7);
+      border-radius: 24px;
+      padding: 20px;
+      margin-bottom: 16px;
+      border-left: 4px solid #3b82f6;
+      transition: all 0.3s;
+    }
+    .candidate-card:hover { transform: translateX(5px); background: rgba(30, 40, 65, 0.8); }
+
+    .action-buttons { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+    .action-btn {
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.8rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    .select-btn { background: linear-gradient(95deg, #10b981, #059669); color: white; }
+    .reject-btn { background: linear-gradient(95deg, #ef4444, #dc2626); color: white; }
+    .delete-btn { background: rgba(100, 116, 139, 0.5); color: #e2e8f0; border: 1px solid #475569; }
+    .action-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-left: 12px;
+    }
+    .status-selected { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+    .status-rejected { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .status-pending { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+
+    .badge { background: rgba(34,197,94,0.2); color: #4ade80; padding: 2px 10px; border-radius: 40px; font-size: 0.7rem; display: inline-block; }
+    .match-bar { background: #1e293b; border-radius: 20px; height: 8px; overflow: hidden; margin: 8px 0; }
+    .match-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #c084fc); border-radius: 20px; transition: width 0.5s ease; }
+
+    .filter-bar { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+    .filter-btn {
+      background: rgba(59,130,246,0.2);
+      border: 1px solid rgba(59,130,246,0.4);
+      padding: 6px 16px;
+      border-radius: 40px;
+      cursor: pointer;
+      font-size: 0.8rem;
+    }
+    .filter-btn.active { background: #3b82f6; border-color: #3b82f6; }
+
+    .success-msg { color: #4ade80; margin-top: 12px; display: none; }
+
+    @media (max-width: 860px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main-content { margin-left: 0; }
+      .menu-toggle { display: block; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="dashboard">
+  <div class="sidebar" id="sidebar">
+    <div class="logo-area">
+      <div class="logo-icon"><i class="fas fa-building"></i></div>
+      <span class="logo-text">SmartRecruiter</span>
+    </div>
+    <ul class="nav-links">
+      <li data-section="postJob" class="nav-active"><i class="fas fa-plus-circle"></i> <span>Post New Job</span></li>
+      <li data-section="dashboard"><i class="fas fa-chart-pie"></i> <span>Dashboard</span></li>
+      <li data-section="postedJobs"><i class="fas fa-briefcase"></i> <span>My Job Posts</span></li>
+      <li data-section="candidates"><i class="fas fa-users"></i> <span>All Candidates</span></li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <div class="top-nav">
+      <div class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></div>
+      <div class="welcome-area">
+        <h2>Welcome back, <span id="welcomeName">Recruiter</span> 🚀</h2>
+        <p>Post jobs and find the best talent with AI matching</p>
+      </div>
+      <div class="profile-dropdown">
+        <div class="profile-avatar" id="profileAvatarBtn">
+          <div class="avatar-img" id="avatarInitials">RC</div>
+          <i class="fas fa-chevron-down"></i>
+        </div>
+        <div class="dropdown-menu" id="dropdownMenu">
+          <div class="dropdown-header">
+            <div><strong id="dropdownUserName">Recruiter</strong></div>
+            <div class="user-email" id="dropdownUserEmail" style="font-size:0.8rem; color:#94a3b8;"></div>
+          </div>
+          <div class="dropdown-item" id="profileItem"><i class="fas fa-user-circle"></i> My Profile</div>
+          <div class="dropdown-item" id="logoutItem"><i class="fas fa-sign-out-alt"></i> Logout</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- POST JOB SECTION -->
+    <div id="postJobSection" class="glass-card">
+      <h3><i class="fas fa-file-signature"></i> Create New Job Opening</h3>
+      <p style="margin-bottom: 16px; color:#b9c7e6;">Fill details below to post a job and start receiving applications</p>
+      <div class="input-group"><i class="fas fa-building"></i><input type="text" id="companyName" placeholder="Company Name *"></div>
+      <div class="input-group"><i class="fas fa-code-branch"></i><input type="text" id="jobCode" placeholder="Job Code / Reference ID"></div>
+      <div class="input-group"><i class="fas fa-briefcase"></i><input type="text" id="jobTitle" placeholder="Job Title / Role *"></div>
+      <div class="input-group"><i class="fas fa-layer-group"></i><input type="text" id="department" placeholder="Department Name *"></div>
+      <div class="input-group"><i class="fas fa-map-marker-alt"></i><input type="text" id="jobLocation" placeholder="Location"></div>
+      <div class="input-group"><i class="fas fa-tag"></i><input type="text" id="requiredSkills" placeholder="Required Skills (comma separated)"></div>
+      <div class="input-group"><i class="fas fa-align-left"></i><textarea id="jobDescription" rows="4" placeholder="Job Description"></textarea></div>
+      <button class="gradient-btn" id="postJobBtn"><i class="fas fa-cloud-upload-alt"></i> Post Job Opening</button>
+      <div class="success-msg" id="postMsg">✅ Job posted successfully!</div>
+    </div>
+
+    <!-- DASHBOARD SECTION -->
+    <div id="dashboardSection" class="glass-card" style="display: none;">
+      <h3><i class="fas fa-chart-line"></i> Recruitment Dashboard</h3>
+      <p style="margin-bottom: 20px;">AI-powered match scores for candidates across all your job postings</p>
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">All Candidates</button>
+        <button class="filter-btn" data-filter="high">High Match (≥70%)</button>
+        <button class="filter-btn" data-filter="medium">Medium Match (40-69%)</button>
+        <button class="filter-btn" data-filter="low">Low Match (&lt;40%)</button>
+      </div>
+      <div id="dashboardStats"></div>
+    </div>
+
+    <!-- POSTED JOBS SECTION -->
+    <div id="postedJobsSection" class="glass-card" style="display: none;">
+      <h3><i class="fas fa-briefcase"></i> Your Active Job Posts</h3>
+      <div id="postedJobsContainer" class="jobs-grid"></div>
+    </div>
+
+    <!-- ALL CANDIDATES SECTION -->
+    <div id="candidatesSection" class="glass-card" style="display: none;">
+      <h3><i class="fas fa-users"></i> All Candidates & Match Scores</h3>
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter-cand="all">All</button>
+        <button class="filter-btn" data-filter-cand="selected">Selected</button>
+        <button class="filter-btn" data-filter-cand="rejected">Rejected</button>
+        <button class="filter-btn" data-filter-cand="pending">Pending</button>
+      </div>
+      <div id="allCandidatesContainer"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ========== GET COMPANY DOMAIN FROM LOGIN EMAIL ==========
+  let currentRecruiterEmail = localStorage.getItem('recruiter_email') || '';
+  let companyDomain = '';
+  
+  // Extract domain from email (e.g., hr@techcorp.io -> techcorp.io)
+  if (currentRecruiterEmail && currentRecruiterEmail.includes('@')) {
+    companyDomain = currentRecruiterEmail.split('@')[1].toLowerCase();
+  }
+  
+  let isLoggedIn = localStorage.getItem('recruiter_logged_in') === 'true';
+  let currentRecruiterName = localStorage.getItem('recruiter_name') || 'Recruiter';
+  
+  // ========== COMPANY-SPECIFIC DATA STORAGE ==========
+  // Use company domain as key for jobs - THIS ENSURES ISOLATION
+  let recruiterJobsKey = `recruiter_jobs_${companyDomain}`;
+  let recruiterJobs = JSON.parse(localStorage.getItem(recruiterJobsKey)) || [];
+  
+  // Use company domain as key for applications to this company
+  let candidatesDataKey = `company_applications_${companyDomain}`;
+  let candidatesData = JSON.parse(localStorage.getItem(candidatesDataKey)) || [];
+  
+  let currentFilter = 'all';
+  let currentCandFilter = 'all';
+
+  // Save jobs to company-specific storage
+  function saveJobs() {
+    localStorage.setItem(recruiterJobsKey, JSON.stringify(recruiterJobs));
+  }
+  
+  // Save candidates to company-specific storage
+  function saveCandidates() {
+    localStorage.setItem(candidatesDataKey, JSON.stringify(candidatesData));
+  }
+
+  function calculateMatchPercentage(jobSkills, candidateSkills) {
+    if (!jobSkills || !candidateSkills) return 0;
+    const jobSkillsArr = jobSkills.toLowerCase().split(',').map(s => s.trim()).filter(s => s);
+    const candidateSkillsArr = candidateSkills.toLowerCase().split(',').map(s => s.trim()).filter(s => s);
+    if (jobSkillsArr.length === 0) return 0;
+    let matchCount = 0;
+    candidateSkillsArr.forEach(skill => {
+      if (jobSkillsArr.includes(skill)) matchCount++;
+    });
+    return Math.floor((matchCount / jobSkillsArr.length) * 100);
+  }
+
+  function getMissingSkills(jobSkills, candidateSkills) {
+    if (!jobSkills) return [];
+    const jobArr = jobSkills.toLowerCase().split(',').map(s => s.trim());
+    const candArr = candidateSkills ? candidateSkills.toLowerCase().split(',').map(s => s.trim()) : [];
+    return jobArr.filter(skill => !candArr.includes(skill));
+  }
+
+  // Send Email Simulation
+  function sendEmailNotification(candidate, job, action, missingSkills = []) {
+    const companyName = job?.companyName || "Our Company";
+    const candidateName = candidate.candidateName;
+    const candidateEmail = candidate.candidateEmail;
+    const jobTitle = job?.jobTitle || candidate.jobTitle;
+    
+    let subject, body;
+    if (action === 'selected') {
+      subject = `🎉 Congratulations! You're Selected for ${jobTitle} at ${companyName}`;
+      body = `Dear ${candidateName},\n\nWe are thrilled to inform you that you have been selected for "${jobTitle}" at ${companyName}.\n\nOur HR team will contact you soon.\n\nBest regards,\nRecruitment Team\n${companyName}`;
+    } else if (action === 'rejected') {
+      const missingText = missingSkills.length > 0 ? `\n\nFeedback: Missing skills - ${missingSkills.join(', ')}` : '';
+      subject = `Update on your application for ${jobTitle} at ${companyName}`;
+      body = `Dear ${candidateName},\n\nThank you for applying. After review, we have decided to move forward with other candidates.${missingText}\n\nBest regards,\nRecruitment Team\n${companyName}`;
+    }
+    
+    const sentEmails = JSON.parse(localStorage.getItem('sent_notifications')) || [];
+    sentEmails.push({ to: candidateEmail, subject: subject, body: body, sentAt: new Date().toLocaleString(), action: action });
+    localStorage.setItem('sent_notifications', JSON.stringify(sentEmails));
+    alert(`✅ Email sent to ${candidateEmail}\n\nSubject: ${subject}`);
+    return true;
+  }
+
+  function updateApplicationStatus(candidate, job, newStatus, missingSkills = []) {
+    const appIndex = candidatesData.findIndex(app => 
+      app.candidateEmail === candidate.candidateEmail && 
+      app.jobTitle === (job?.jobTitle || candidate.jobTitle) &&
+      app.companyName === (job?.companyName || candidate.companyName)
+    );
+    
+    if (appIndex !== -1) {
+      candidatesData[appIndex].status = newStatus;
+      candidatesData[appIndex].statusUpdatedAt = new Date().toLocaleString();
+      if (missingSkills.length > 0 && newStatus === 'rejected') {
+        candidatesData[appIndex].missingSkills = missingSkills;
+      }
+      saveCandidates();
+      
+      sendEmailNotification(candidate, job, newStatus, missingSkills);
+      
+      renderDashboard();
+      renderPostedJobs();
+      renderAllCandidates();
+    }
+  }
+
+  function getJobForCandidate(candidate) {
+    return recruiterJobs.find(job => 
+      job.jobTitle === candidate.jobTitle && 
+      job.companyName === candidate.companyName
+    );
+  }
+
+  function renderDashboard() {
+    const container = document.getElementById('dashboardStats');
+    if (!container) return;
+    
+    let filteredCandidates = [...candidatesData];
+    
+    if (currentFilter !== 'all') {
+      filteredCandidates = filteredCandidates.filter(candidate => {
+        const job = getJobForCandidate(candidate);
+        if (!job) return false;
+        const match = calculateMatchPercentage(job.requiredSkills, candidate.candidateSkills || candidate.skills);
+        if (currentFilter === 'high') return match >= 70;
+        if (currentFilter === 'medium') return match >= 40 && match < 70;
+        if (currentFilter === 'low') return match < 40;
+        return true;
+      });
+    }
+    
+    if (filteredCandidates.length === 0) {
+      container.innerHTML = '<div style="text-align:center; padding:40px;">📭 No candidates match the selected filter.</div>';
+      return;
+    }
+    
+    let html = '<div style="display:flex; flex-direction:column; gap:20px;">';
+    filteredCandidates.forEach(candidate => {
+      const job = getJobForCandidate(candidate);
+      const matchPercent = job ? calculateMatchPercentage(job.requiredSkills, candidate.candidateSkills || candidate.skills) : 0;
+      const missingSkills = job ? getMissingSkills(job.requiredSkills, candidate.candidateSkills || candidate.skills) : [];
+      const status = candidate.status || 'pending';
+      
+      html += `
+        <div class="candidate-card">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+            <div>
+              <h4><i class="fas fa-user-circle"></i> ${escapeHtml(candidate.candidateName)}</h4>
+              <p style="color:#94a3b8; font-size:0.85rem;">${escapeHtml(candidate.candidateEmail)}</p>
+            </div>
+            <div>
+              <span class="badge">Match: ${matchPercent}%</span>
+              <span class="status-badge status-${status}">${status.toUpperCase()}</span>
+            </div>
+          </div>
+          <div class="match-bar"><div class="match-fill" style="width: ${matchPercent}%;"></div></div>
+          <div><strong>Applied for:</strong> ${escapeHtml(candidate.jobTitle)} @ ${escapeHtml(candidate.companyName)}</div>
+          <div><strong>Skills:</strong> <span style="color:#60a5fa;">${escapeHtml(candidate.candidateSkills || candidate.skills || 'Not specified')}</span></div>
+          ${missingSkills.length > 0 ? `<div style="font-size:0.8rem; color:#fbbf24;"><i class="fas fa-exclamation-triangle"></i> Missing: ${missingSkills.join(', ')}</div>` : ''}
+          <div class="action-buttons">
+            <button class="action-btn select-btn" data-email="${candidate.candidateEmail}" data-jobtitle="${candidate.jobTitle}" data-company="${candidate.companyName}" data-action="select"><i class="fas fa-check"></i> Select & Send Offer</button>
+            <button class="action-btn reject-btn" data-email="${candidate.candidateEmail}" data-jobtitle="${candidate.jobTitle}" data-company="${candidate.companyName}" data-action="reject" data-missing="${missingSkills.join(',')}"><i class="fas fa-times"></i> Reject & Send Feedback</button>
+            <button class="action-btn delete-btn" data-email="${candidate.candidateEmail}" data-jobtitle="${candidate.jobTitle}" data-action="delete"><i class="fas fa-trash"></i> Delete Application</button>
+          </div>
+        </div>
+      `;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+    attachActionButtons();
+  }
+
+  function attachActionButtons() {
+    document.querySelectorAll('.select-btn').forEach(btn => {
+      btn.removeEventListener('click', handleSelect);
+      btn.addEventListener('click', handleSelect);
+    });
+    document.querySelectorAll('.reject-btn').forEach(btn => {
+      btn.removeEventListener('click', handleReject);
+      btn.addEventListener('click', handleReject);
+    });
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.removeEventListener('click', handleDelete);
+      btn.addEventListener('click', handleDelete);
+    });
+  }
+  
+  function handleSelect(e) {
+    const email = e.currentTarget.getAttribute('data-email');
+    const jobTitle = e.currentTarget.getAttribute('data-jobtitle');
+    const company = e.currentTarget.getAttribute('data-company');
+    const candidate = candidatesData.find(c => c.candidateEmail === email && c.jobTitle === jobTitle && c.companyName === company);
+    const job = recruiterJobs.find(j => j.jobTitle === jobTitle && j.companyName === company);
+    if (candidate && confirm(`Send selection offer to ${candidate.candidateName}?`)) {
+      updateApplicationStatus(candidate, job, 'selected');
+    }
+  }
+  
+  function handleReject(e) {
+    const email = e.currentTarget.getAttribute('data-email');
+    const jobTitle = e.currentTarget.getAttribute('data-jobtitle');
+    const company = e.currentTarget.getAttribute('data-company');
+    const missingSkillsStr = e.currentTarget.getAttribute('data-missing') || '';
+    const missingSkills = missingSkillsStr ? missingSkillsStr.split(',') : [];
+    const candidate = candidatesData.find(c => c.candidateEmail === email && c.jobTitle === jobTitle && c.companyName === company);
+    const job = recruiterJobs.find(j => j.jobTitle === jobTitle && j.companyName === company);
+    if (candidate && confirm(`Send rejection feedback to ${candidate.candidateName}?`)) {
+      updateApplicationStatus(candidate, job, 'rejected', missingSkills);
+    }
+  }
+  
+  function handleDelete(e) {
+    const email = e.currentTarget.getAttribute('data-email');
+    const jobTitle = e.currentTarget.getAttribute('data-jobtitle');
+    const company = e.currentTarget.getAttribute('data-company');
+    const index = candidatesData.findIndex(c => c.candidateEmail === email && c.jobTitle === jobTitle && c.companyName === company);
+    if (index !== -1 && confirm(`Delete application from ${candidatesData[index].candidateName}?`)) {
+      candidatesData.splice(index, 1);
+      saveCandidates();
+      renderDashboard();
+      renderPostedJobs();
+      renderAllCandidates();
+      alert('✅ Application deleted successfully.');
+    }
+  }
+
+  function renderAllCandidates() {
+    const container = document.getElementById('allCandidatesContainer');
+    if (!container) return;
+    
+    let filtered = [...candidatesData];
+    if (currentCandFilter !== 'all') {
+      filtered = filtered.filter(c => (c.status || 'pending') === currentCandFilter);
+    }
+    
+    if (filtered.length === 0) {
+      container.innerHTML = '<div style="text-align:center; padding:40px;">📝 No candidates found for your company.</div>';
+      return;
+    }
+    
+    let html = '<div style="display:flex; flex-direction:column; gap:16px;">';
+    filtered.forEach(candidate => {
+      const job = getJobForCandidate(candidate);
+      const matchPercent = job ? calculateMatchPercentage(job.requiredSkills, candidate.candidateSkills || candidate.skills) : 0;
+      const status = candidate.status || 'pending';
+      html += `
+        <div class="candidate-card">
+          <div style="display: flex; justify-content: space-between;">
+            <div><strong>${escapeHtml(candidate.candidateName)}</strong><br><span style="font-size:0.8rem;">${escapeHtml(candidate.candidateEmail)}</span></div>
+            <div><span class="badge">Match: ${matchPercent}%</span> <span class="status-badge status-${status}">${status.toUpperCase()}</span></div>
+          </div>
+          <div><strong>Applied:</strong> ${escapeHtml(candidate.jobTitle)} @ ${escapeHtml(candidate.companyName)}</div>
+          <div><strong>Skills:</strong> ${escapeHtml(candidate.candidateSkills || candidate.skills || 'N/A')}</div>
+          <div class="action-buttons">
+            <button class="action-btn select-btn" data-email="${candidate.candidateEmail}" data-jobtitle="${candidate.jobTitle}" data-company="${candidate.companyName}" data-action="select"><i class="fas fa-check"></i> Select</button>
+            <button class="action-btn reject-btn" data-email="${candidate.candidateEmail}" data-jobtitle="${candidate.jobTitle}" data-company="${candidate.companyName}" data-action="reject"><i class="fas fa-times"></i> Reject</button>
+            <button class="action-btn delete-btn" data-email="${candidate.candidateEmail}" data-jobtitle="${candidate.jobTitle}" data-company="${candidate.companyName}" data-action="delete"><i class="fas fa-trash"></i> Delete</button>
+          </div>
+        </div>
+      `;
+    });
+    html += '</div>';
+    container.innerHTML = html;
+    attachActionButtons();
+  }
+
+  function renderPostedJobs() {
+    const container = document.getElementById('postedJobsContainer');
+    if (!container) return;
+    
+    // CRITICAL FIX: Only show jobs that belong to the current company
+    const companyJobs = recruiterJobs.filter(job => job.companyName && job.companyName.toLowerCase().includes(companyDomain.split('.')[0]) || 
+      (job.companyName && job.companyName.toLowerCase() === companyDomain.split('.')[0]));
+    
+    if (companyJobs.length === 0) {
+      container.innerHTML = '<div style="text-align:center; padding:40px;">📌 No jobs posted yet by your company.</div>';
+      return;
+    }
+    
+    container.innerHTML = '';
+    companyJobs.forEach((job) => {
+      const matches = candidatesData.filter(c => c.jobTitle === job.jobTitle && c.companyName === job.companyName);
+      const card = document.createElement('div');
+      card.className = 'job-card';
+      card.innerHTML = `
+        <div style="font-size:1.2rem; font-weight:600; margin-bottom:8px;">${escapeHtml(job.jobTitle)}</div>
+        <div class="company"><i class="fas fa-building"></i> ${escapeHtml(job.companyName)}</div>
+        <div class="job-detail"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(job.location || 'Not specified')}</div>
+        <div><span class="badge">📥 ${matches.length} Applications</span></div>
+        <div class="match-stats" style="margin-top:8px;"><strong>Required Skills:</strong> ${escapeHtml(job.requiredSkills || 'None')}</div>
+        <button class="gradient-btn" style="margin-top:12px; width:100%; padding:8px;" onclick="viewJobApplications('${job.jobTitle}', '${job.companyName}')"><i class="fas fa-users"></i> View Applicants</button>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  window.viewJobApplications = function(jobTitle, companyName) {
+    const job = recruiterJobs.find(j => j.jobTitle === jobTitle && j.companyName === companyName);
+    const applicants = candidatesData.filter(c => c.jobTitle === jobTitle && c.companyName === companyName);
+    let msg = `📋 Applicants for ${jobTitle} at ${companyName}\n\n`;
+    applicants.forEach((a, i) => {
+      const match = calculateMatchPercentage(job?.requiredSkills, a.candidateSkills || a.skills);
+      msg += `${i+1}. ${a.candidateName} (${a.candidateEmail}) - Match: ${match}% - Status: ${a.status || 'pending'}\n`;
+    });
+    alert(msg || "No applicants yet.");
+  };
+
+  function postNewJob() {
+    const companyName = document.getElementById('companyName').value.trim();
+    const jobTitle = document.getElementById('jobTitle').value.trim();
+    const department = document.getElementById('department').value.trim();
+    if (!companyName || !jobTitle || !department) { alert('❌ Please fill required fields.'); return; }
+    
+    // Auto-set company name from domain if not provided or validate
+    const defaultCompany = companyDomain.split('.')[0].charAt(0).toUpperCase() + companyDomain.split('.')[0].slice(1);
+    const finalCompanyName = companyName || defaultCompany;
+    
+    const newJob = { 
+      id: Date.now(), 
+      companyName: finalCompanyName, 
+      companyDomain: companyDomain, // Store domain for verification
+      jobCode: document.getElementById('jobCode').value.trim() || 'N/A', 
+      jobTitle, 
+      department, 
+      location: document.getElementById('jobLocation').value.trim() || 'Not specified', 
+      requiredSkills: document.getElementById('requiredSkills').value.trim() || '', 
+      jobDescription: document.getElementById('jobDescription').value.trim() || '', 
+      postedAt: new Date().toLocaleString() 
+    };
+    recruiterJobs.push(newJob);
+    saveJobs();
+    document.getElementById('postMsg').style.display = 'block';
+    setTimeout(() => document.getElementById('postMsg').style.display = 'none', 2500);
+    document.getElementById('companyName').value = ''; document.getElementById('jobCode').value = ''; document.getElementById('jobTitle').value = ''; 
+    document.getElementById('department').value = ''; document.getElementById('jobLocation').value = ''; document.getElementById('requiredSkills').value = ''; 
+    document.getElementById('jobDescription').value = '';
+    renderDashboard(); renderPostedJobs(); renderAllCandidates();
+    alert(`✅ Job "${jobTitle}" posted successfully for ${finalCompanyName}!`);
+  }
+
+  function switchSection(sectionId) {
+    const sections = ['postJobSection', 'dashboardSection', 'postedJobsSection', 'candidatesSection'];
+    sections.forEach(sec => {
+      const el = document.getElementById(sec);
+      if (el) el.style.display = 'none';
+    });
+    const activeSection = document.getElementById(sectionId);
+    if (activeSection) activeSection.style.display = 'block';
+    
+    document.querySelectorAll('.nav-links li').forEach(li => li.classList.remove('nav-active'));
+    const navMap = { postJob: 'postJobSection', dashboard: 'dashboardSection', postedJobs: 'postedJobsSection', candidates: 'candidatesSection' };
+    for (let [key, value] of Object.entries(navMap)) {
+      if (value === sectionId) {
+        const activeLi = document.querySelector(`[data-section="${key}"]`);
+        if (activeLi) activeLi.classList.add('nav-active');
+      }
+    }
+    
+    if (sectionId === 'dashboardSection') renderDashboard();
+    if (sectionId === 'postedJobsSection') renderPostedJobs();
+    if (sectionId === 'candidatesSection') renderAllCandidates();
+  }
+
+  function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, function(m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); }
+
+  function updateRecruiterUI() {
+    const welcomeName = document.getElementById('welcomeName');
+    const dropdownUserName = document.getElementById('dropdownUserName');
+    const dropdownUserEmail = document.getElementById('dropdownUserEmail');
+    const avatarInitials = document.getElementById('avatarInitials');
+    
+    if (welcomeName) welcomeName.innerText = currentRecruiterName;
+    if (dropdownUserName) dropdownUserName.innerText = currentRecruiterName;
+    if (dropdownUserEmail) dropdownUserEmail.innerText = currentRecruiterEmail;
+    if (avatarInitials) avatarInitials.innerText = currentRecruiterName.substring(0, 2).toUpperCase();
+    
+    // Show company domain in welcome area
+    if (companyDomain) {
+      const welcomeP = document.querySelector('.welcome-area p');
+      if (welcomeP && !welcomeP.querySelector('.company-info')) {
+        welcomeP.innerHTML = `Post jobs and find the best talent with AI matching • <span class="company-info" style="color:#60a5fa;">${companyDomain}</span>`;
+      }
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem('recruiter_logged_in');
+    localStorage.removeItem('recruiter_email');
+    localStorage.removeItem('recruiter_name');
+    window.location.href = 'login.html';
+  }
+
+  function checkLoginState() {
+    if (localStorage.getItem('recruiter_logged_in') !== 'true') {
+      window.location.href = 'login.html';
+    } else if (!companyDomain) {
+      alert('Invalid session. Please login again.');
+      logout();
+    } else {
+      updateRecruiterUI();
+      renderDashboard();
+      renderPostedJobs();
+      renderAllCandidates();
+      switchSection('postJobSection');
+    }
+  }
+
+  // Filter listeners
+  document.querySelectorAll('[data-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilter = btn.getAttribute('data-filter');
+      renderDashboard();
+    });
+  });
+  
+  document.querySelectorAll('[data-filter-cand]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('[data-filter-cand]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentCandFilter = btn.getAttribute('data-filter-cand');
+      renderAllCandidates();
+    });
+  });
+
+  document.getElementById('menuToggle')?.addEventListener('click', () => document.getElementById('sidebar').classList.toggle('open'));
+  document.getElementById('postJobBtn')?.addEventListener('click', postNewJob);
+  document.getElementById('logoutItem')?.addEventListener('click', logout);
+  document.getElementById('profileItem')?.addEventListener('click', () => alert(`Profile: ${currentRecruiterName}\nEmail: ${currentRecruiterEmail}\nCompany Domain: ${companyDomain}`));
+  
+  document.getElementById('profileAvatarBtn')?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    document.getElementById('dropdownMenu').classList.toggle('active');
+  });
+  document.addEventListener('click', (e) => {
+    if (!document.getElementById('profileAvatarBtn')?.contains(e.target)) {
+      document.getElementById('dropdownMenu')?.classList.remove('active');
+    }
+  });
+
+  document.querySelectorAll('.nav-links li').forEach(li => {
+    li.addEventListener('click', () => {
+      const section = li.getAttribute('data-section');
+      if (section === 'postJob') switchSection('postJobSection');
+      else if (section === 'dashboard') switchSection('dashboardSection');
+      else if (section === 'postedJobs') switchSection('postedJobsSection');
+      else if (section === 'candidates') switchSection('candidatesSection');
+      if (window.innerWidth < 860) document.getElementById('sidebar').classList.remove('open');
+    });
+  });
+
+  checkLoginState();
+</script>
+</body>
+</html>

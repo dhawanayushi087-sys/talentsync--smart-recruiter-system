@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>TalentSync | Candidate Portal</title>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      background: radial-gradient(circle at 20% 30%, #0a0f1e, #03050b);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Animated background elements */
+    body::before {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(0, 210, 255, 0.3), transparent 70%);
+      top: -100px;
+      left: -100px;
+      border-radius: 50%;
+      animation: float 20s ease-in-out infinite;
+    }
+
+    body::after {
+      content: '';
+      position: absolute;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.25), transparent 70%);
+      bottom: -150px;
+      right: -150px;
+      border-radius: 50%;
+      animation: float 25s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(30px, -20px) scale(1.05); }
+    }
+
+    /* Floating particles */
+    .particle {
+      position: absolute;
+      background: rgba(0, 210, 255, 0.2);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: particleFloat 15s infinite;
+    }
+
+    @keyframes particleFloat {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.5; }
+      90% { opacity: 0.5; }
+      100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* Main container */
+    .container {
+      width: 100%;
+      max-width: 480px;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Back navigation button */
+    .back-nav {
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(15, 25, 45, 0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 210, 255, 0.3);
+      border-radius: 40px;
+      padding: 8px 20px;
+      color: #00d4ff;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .back-btn i {
+      font-size: 0.9rem;
+      transition: transform 0.2s ease;
+    }
+
+    .back-btn:hover {
+      background: rgba(0, 210, 255, 0.15);
+      border-color: #00d4ff;
+      transform: translateX(-3px);
+    }
+
+    .back-btn:hover i {
+      transform: translateX(-3px);
+    }
+
+    /* Glass card */
+    .auth-card {
+      background: rgba(15, 25, 45, 0.65);
+      backdrop-filter: blur(20px);
+      border-radius: 32px;
+      border: 1px solid rgba(0, 210, 255, 0.3);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(0, 210, 255, 0.1) inset;
+      padding: 2.5rem;
+      transition: all 0.4s ease;
+    }
+
+    .auth-card:hover {
+      border-color: rgba(0, 210, 255, 0.5);
+      box-shadow: 0 30px 60px -15px rgba(0, 210, 255, 0.3);
+    }
+
+    /* Logo */
+    .logo {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #00d4ff, #8b5cf6);
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+      box-shadow: 0 8px 20px rgba(0, 212, 255, 0.4);
+    }
+
+    .logo-icon i {
+      font-size: 2rem;
+      color: white;
+    }
+
+    .logo h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #fff, #8a9eff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .logo p {
+      font-size: 0.85rem;
+      color: #8e9ecc;
+      margin-top: 0.25rem;
+    }
+
+    /* Form title */
+    .form-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      text-align: center;
+      background: linear-gradient(135deg, #fff, #b4c4ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* Input groups */
+    .input-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .input-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: #cbd5ff;
+      letter-spacing: 0.3px;
+    }
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .input-wrapper i {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6c7eb3;
+      font-size: 1rem;
+      transition: color 0.2s;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.9rem 1rem 0.9rem 2.8rem;
+      background: rgba(10, 20, 35, 0.7);
+      border: 1.5px solid rgba(0, 210, 255, 0.3);
+      border-radius: 16px;
+      color: white;
+      font-size: 0.95rem;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #00d4ff;
+      box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.2);
+      background: rgba(15, 30, 50, 0.8);
+    }
+
+    /* Candidate badge */
+    .candidate-badge {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      display: inline-block;
+      width: 100%;
+    }
+    
+    .badge {
+      display: inline-block;
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(139, 92, 246, 0.2));
+      padding: 6px 18px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #00d4ff;
+      border: 1px solid rgba(0, 212, 255, 0.4);
+      backdrop-filter: blur(4px);
+    }
+    
+    .badge i {
+      margin-right: 6px;
+    }
+
+    /* Submit button */
+    .submit-btn {
+      width: 100%;
+      padding: 0.9rem;
+      background: linear-gradient(135deg, #00d4ff, #8b5cf6);
+      border: none;
+      border-radius: 40px;
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 0.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .submit-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .submit-btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px rgba(0, 212, 255, 0.5);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Divider */
+    .divider {
+      margin: 1.8rem 0;
+      display: flex;
+      align-items: center;
+      text-align: center;
+      color: #6c7eb3;
+      font-size: 0.8rem;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid rgba(0, 210, 255, 0.3);
+    }
+
+    .divider span {
+      margin: 0 1rem;
+    }
+
+    /* Google button */
+    .google-btn {
+      width: 100%;
+      padding: 0.9rem;
+      border-radius: 40px;
+      border: 1.5px solid rgba(0, 210, 255, 0.4);
+      background: rgba(255, 255, 255, 0.03);
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      backdrop-filter: blur(5px);
+    }
+
+    .google-btn i {
+      font-size: 1.2rem;
+      color: #fff;
+    }
+
+    .google-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #00d4ff;
+      transform: translateY(-2px);
+    }
+
+    .google-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Toggle link */
+    .toggle {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.9rem;
+      color: #8e9ecc;
+    }
+
+    .toggle a {
+      color: #00d4ff;
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .toggle a:hover {
+      color: #8ea2ff;
+      text-decoration: underline;
+    }
+
+    /* Message */
+    .message {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      text-align: center;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(4px);
+    }
+
+    .message.success {
+      color: #6effb0;
+      border-left: 3px solid #6effb0;
+    }
+
+    .message.error {
+      color: #ff8a8a;
+      border-left: 3px solid #ff8a8a;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Loading spinner */
+    .loading-spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin-left: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsive */
+    @media (max-width: 520px) {
+      .auth-card {
+        padding: 1.8rem;
+      }
+      .form-title {
+        font-size: 1.5rem;
+      }
+      .back-btn {
+        padding: 6px 16px;
+        font-size: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Back Navigation Button - Fixed to work with browser history -->
+  <div class="back-nav">
+    <button class="back-btn" id="backButton" onclick="handleBackNavigation()">
+      <i class="fas fa-arrow-left"></i> Back to Home
+    </button>
+  </div>
+
+  <div class="auth-card">
+    <div class="logo">
+      <div class="logo-icon">
+        <i class="fas fa-user-graduate"></i>
+      </div>
+      <h1>TalentSync</h1>
+      <p>AI-Powered Hiring Platform</p>
+    </div>
+
+    <!-- Candidate Badge -->
+    <div class="candidate-badge">
+      <span class="badge"><i class="fas fa-star"></i> Candidate Portal · Find Your Dream Job</span>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="loginForm">
+      <div class="form-title">
+        <i class="fas fa-sign-in-alt" style="font-size: 1.4rem; margin-right: 0.5rem;"></i>
+        Welcome Back
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Username</label>
+        <div class="input-wrapper">
+          <i class="fas fa-user"></i>
+          <input type="text" id="loginUsername" placeholder="Enter your username" autocomplete="username">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Password</label>
+        <div class="input-wrapper">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password">
+        </div>
+      </div>
+
+      <button class="submit-btn" id="loginBtn" onclick="login()">
+        <i class="fas fa-arrow-right-to-bracket"></i> Login as Candidate
+      </button>
+
+      <div class="divider">
+        <span>or continue with</span>
+      </div>
+
+      <button class="google-btn" id="googleBtn" onclick="googleLogin()">
+        <i class="fab fa-google"></i> Continue with Google
+      </button>
+
+      <div class="toggle">
+        New to TalentSync? <a onclick="showSignup()">Create an account →</a>
+      </div>
+      <div id="loginMsg" class="message hidden"></div>
+    </div>
+
+    <!-- SIGNUP FORM -->
+    <div id="signupForm" class="hidden">
+      <div class="form-title">
+        <i class="fas fa-user-plus" style="font-size: 1.4rem; margin-right: 0.5rem;"></i>
+        Create Candidate Account
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Username</label>
+        <div class="input-wrapper">
+          <i class="fas fa-user"></i>
+          <input type="text" id="signupUsername" placeholder="Choose a username">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Email</label>
+        <div class="input-wrapper">
+          <i class="fas fa-envelope"></i>
+          <input type="email" id="signupEmail" placeholder="hello@example.com">
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Password</label>
+        <div class="input-wrapper">
+          <i class="fas fa-lock"></i>
+          <input type="password" id="signupPassword" placeholder="Create a strong password">
+        </div>
+      </div>
+
+      <button class="submit-btn" id="signupBtn" onclick="signup()">
+        <i class="fas fa-user-check"></i> Sign Up as Candidate
+      </button>
+
+      <div class="divider">
+        <span>or</span>
+      </div>
+
+      <button class="google-btn" id="signupGoogleBtn" onclick="googleLogin()">
+        <i class="fab fa-google"></i> Sign up with Google
+      </button>
+
+      <div class="toggle">
+        Already have an account? <a onclick="showLogin()">Login here →</a>
+      </div>
+      <div id="signupMsg" class="message hidden"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ==================== FIXED BROWSER BACK BUTTON NAVIGATION ====================
+  // The issue was the forced history push that prevented normal back navigation.
+  // Now we properly handle navigation without breaking the browser's back button.
+  
+  // Store the original referrer to enable proper back navigation
+  let previousPage = document.referrer || null;
+  
+  // Function to handle back button click - navigates to previous page or landing page
+  function handleBackNavigation() {
+    // Check if there's a previous page in history that's not the current page
+    if (document.referrer && document.referrer !== window.location.href) {
+      // Use browser's native back functionality
+      window.history.back();
+    } else {
+      // If no referrer, navigate to the landing page (index)
+      // This maintains smooth transition effect
+      document.body.style.opacity = '0';
+      document.body.style.transition = 'opacity 0.3s ease';
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 250);
+    }
+  }
+  
+  // Override the problematic history.pushState that was breaking back button
+  // Instead of forcing a new history entry, we let the browser handle naturally
+  // Remove the old problematic code that pushed a new state
+  // We're NOT adding: history.pushState(null, null, location.href);
+  // And we're NOT adding: window.onpopstate = function () { history.go(1); };
+  
+  // Instead, we'll handle popstate gracefully to allow normal back navigation
+  let allowBackNavigation = true;
+  
+  window.addEventListener('popstate', function(event) {
+    // This fires when user clicks browser back button
+    // We allow the default behavior to happen naturally
+    // No forced forward navigation
+    if (allowBackNavigation) {
+      // Let the browser handle the back navigation normally
+      // We don't need to do anything here - it will go back naturally
+      console.log("Browser back button pressed - navigating naturally");
+    }
+  });
+  
+  // Remove any existing onpopstate override that might be causing issues
+  // The old code had: window.onpopstate = function () { history.go(1); }
+  // That was forcing forward navigation, breaking the back button!
+  // We've removed that problematic code.
+  
+  // ==================== CREATE FLOATING PARTICLES ====================
+  function createParticles() {
+    for (let i = 0; i < 30; i++) {
+      const particle = document.createElement('div');
+      particle.classList.add('particle');
+      const size = Math.random() * 6 + 2;
+      particle.style.width = size + 'px';
+      particle.style.height = size + 'px';
+      particle.style.left = Math.random() * 100 + '%';
+      particle.style.animationDelay = Math.random() * 15 + 's';
+      particle.style.animationDuration = Math.random() * 10 + 8 + 's';
+      particle.style.background = `rgba(0, 210, 255, ${Math.random() * 0.3 + 0.1})`;
+      document.body.appendChild(particle);
+    }
+  }
+  createParticles();
+
+  // Show message helper
+  function showMessage(elementId, text, isError = true) {
+    const msgDiv = document.getElementById(elementId);
+    msgDiv.textContent = text;
+    msgDiv.className = `message ${isError ? 'error' : 'success'}`;
+    msgDiv.classList.remove('hidden');
+    setTimeout(() => {
+      msgDiv.classList.add('hidden');
+    }, 4000);
+  }
+
+  // Show loading state on button
+  function setButtonLoading(btn, loading) {
+    if (loading) {
+      btn.disabled = true;
+      const originalText = btn.innerHTML;
+      btn.setAttribute('data-original', originalText);
+      btn.innerHTML = `<i class="fas fa-spinner fa-pulse"></i> Processing...`;
+    } else {
+      btn.disabled = false;
+      btn.innerHTML = btn.getAttribute('data-original');
+    }
+  }
+
+  // TOGGLE FUNCTIONS (preserve form state without breaking history)
+  function showSignup() {
+    document.getElementById("loginForm").classList.add("hidden");
+    document.getElementById("signupForm").classList.remove("hidden");
+    document.getElementById("loginMsg").classList.add("hidden");
+    document.getElementById("signupMsg").classList.add("hidden");
+  }
+
+  function showLogin() {
+    document.getElementById("signupForm").classList.add("hidden");
+    document.getElementById("loginForm").classList.remove("hidden");
+    document.getElementById("loginMsg").classList.add("hidden");
+    document.getElementById("signupMsg").classList.add("hidden");
+  }
+
+  // SIGNUP FUNCTION
+  function signup() {
+    const username = document.getElementById("signupUsername").value.trim();
+    const email = document.getElementById("signupEmail").value.trim();
+    const password = document.getElementById("signupPassword").value;
+    const btn = document.getElementById('signupBtn');
+
+    if (!username || !email || !password) {
+      showMessage("signupMsg", "❌ Please fill in all fields", true);
+      return;
+    }
+
+    if (password.length < 4) {
+      showMessage("signupMsg", "❌ Password must be at least 4 characters", true);
+      return;
+    }
+
+    if (!email.includes('@') || !email.includes('.')) {
+      showMessage("signupMsg", "❌ Please enter a valid email address", true);
+      return;
+    }
+
+    setButtonLoading(btn, true);
+
+    setTimeout(() => {
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+
+      const exists = users.find(u => u.username.toLowerCase() === username.toLowerCase());
+
+      if (exists) {
+        showMessage("signupMsg", "❌ Username already taken. Please choose another.", true);
+        setButtonLoading(btn, false);
+        return;
+      }
+
+      const emailExists = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+      if (emailExists) {
+        showMessage("signupMsg", "❌ Email already registered. Please login.", true);
+        setButtonLoading(btn, false);
+        return;
+      }
+
+      const newUser = {
+        role: "candidate",
+        username: username,
+        email: email,
+        password: password,
+        createdAt: new Date().toISOString()
+      };
+
+      users.push(newUser);
+      localStorage.setItem("users", JSON.stringify(users));
+
+      showMessage("signupMsg", "✨ Candidate account created successfully! Redirecting to login...", false);
+      
+      setTimeout(() => {
+        setButtonLoading(btn, false);
+        document.getElementById("signupUsername").value = "";
+        document.getElementById("signupEmail").value = "";
+        document.getElementById("signupPassword").value = "";
+        showLogin();
+        showMessage("loginMsg", "✅ Account created! Please login with your credentials.", false);
+      }, 1500);
+    }, 600);
+  }
+
+  // LOGIN FUNCTION - redirects to candidate dashboard
+  function login() {
+    const username = document.getElementById("loginUsername").value.trim();
+    const password = document.getElementById("loginPassword").value;
+    const btn = document.getElementById('loginBtn');
+
+    if (!username || !password) {
+      showMessage("loginMsg", "❌ Please enter username and password", true);
+      return;
+    }
+
+    setButtonLoading(btn, true);
+
+    setTimeout(() => {
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+
+      const user = users.find(u => 
+        u.username.toLowerCase() === username.toLowerCase() && 
+        u.password === password &&
+        u.role === "candidate"
+      );
+
+      if (!user) {
+        showMessage("loginMsg", "❌ Invalid credentials. Please sign up as a candidate first.", true);
+        setButtonLoading(btn, false);
+        return;
+      }
+
+      // Store current session
+      localStorage.setItem("currentUser", JSON.stringify({
+        username: user.username,
+        email: user.email,
+        role: "candidate",
+        loggedInAt: new Date().toISOString()
+      }));
+
+      showMessage("loginMsg", `🎉 Welcome back, ${user.username}! Redirecting to candidate dashboard...`, false);
+
+      setTimeout(() => {
+        setButtonLoading(btn, false);
+        // Use replace to avoid adding this page to history stack twice
+        window.location.replace("candidate.html");
+      }, 800);
+    }, 600);
+  }
+
+  // GOOGLE LOGIN
+  function googleLogin() {
+    const btn = event.currentTarget;
+    const originalHTML = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Connecting to Google...';
+    btn.disabled = true;
+
+    setTimeout(() => {
+      let users = JSON.parse(localStorage.getItem("users")) || [];
+      const googleEmail = "candidate_" + Math.floor(Math.random() * 10000) + "@gmail.com";
+      const randomId = Math.floor(Math.random() * 10000);
+      const googleUser = {
+        role: "candidate",
+        username: "Candidate_" + randomId,
+        email: googleEmail,
+        password: "google_auth_demo_" + randomId,
+        createdAt: new Date().toISOString()
+      };
+      
+      let usernameExists = users.find(u => u.username === googleUser.username);
+      let finalUsername = googleUser.username;
+      let counter = 1;
+      while (usernameExists) {
+        finalUsername = "Candidate_" + randomId + "_" + counter;
+        usernameExists = users.find(u => u.username === finalUsername);
+        counter++;
+      }
+      googleUser.username = finalUsername;
+      
+      users.push(googleUser);
+      localStorage.setItem("users", JSON.stringify(users));
+      localStorage.setItem("currentUser", JSON.stringify({
+        username: googleUser.username,
+        email: googleUser.email,
+        role: "candidate",
+        loggedInAt: new Date().toISOString()
+      }));
+
+      btn.innerHTML = '<i class="fab fa-google"></i> Login Successful!';
+      setTimeout(() => {
+        window.location.replace("candidate.html");
+      }, 500);
+    }, 1000);
+  }
+
+  // Add Enter key support
+  document.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      const loginForm = document.getElementById('loginForm');
+      const signupForm = document.getElementById('signupForm');
+      if (!loginForm.classList.contains('hidden')) {
+        login();
+      } else if (!signupForm.classList.contains('hidden')) {
+        signup();
+      }
+    }
+  });
+
+  // Auto-focus first input
+  setTimeout(() => {
+    const firstInput = document.querySelector('#loginForm input:not([type="hidden"])');
+    if (firstInput) firstInput.focus();
+  }, 100);
+  
+  // Check if user is already logged in and redirect if needed
+  const currentUser = localStorage.getItem("currentUser");
+  if (currentUser) {
+    try {
+      const user = JSON.parse(currentUser);
+      if (user.role === "candidate") {
+        // Already logged in, redirect to candidate dashboard
+        window.location.replace("candidate.html");
+      }
+    } catch(e) {}
+  }
+  
+  console.log("TalentSync Candidate Portal ready — Browser back button now works correctly!");
+</script>
+
+</body>
+</html>
