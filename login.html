@@ -433,14 +433,20 @@
         font-size: 0.75rem;
       }
     }
+
+    /* Smooth page transition */
+    .fade-out {
+      opacity: 0;
+      transition: opacity 0.25s ease-out;
+    }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <!-- Back Navigation Button - Fixed to work with browser history -->
+  <!-- Back Navigation Button - Direct navigation to index.html -->
   <div class="back-nav">
-    <button class="back-btn" id="backButton" onclick="handleBackNavigation()">
+    <button class="back-btn" id="backButton">
       <i class="fas fa-arrow-left"></i> Back to Home
     </button>
   </div>
@@ -482,7 +488,7 @@
         </div>
       </div>
 
-      <button class="submit-btn" id="loginBtn" onclick="login()">
+      <button class="submit-btn" id="loginBtn">
         <i class="fas fa-arrow-right-to-bracket"></i> Login as Candidate
       </button>
 
@@ -490,12 +496,12 @@
         <span>or continue with</span>
       </div>
 
-      <button class="google-btn" id="googleBtn" onclick="googleLogin()">
+      <button class="google-btn" id="googleBtn">
         <i class="fab fa-google"></i> Continue with Google
       </button>
 
       <div class="toggle">
-        New to TalentSync? <a onclick="showSignup()">Create an account →</a>
+        New to TalentSync? <a id="showSignupLink">Create an account →</a>
       </div>
       <div id="loginMsg" class="message hidden"></div>
     </div>
@@ -531,7 +537,7 @@
         </div>
       </div>
 
-      <button class="submit-btn" id="signupBtn" onclick="signup()">
+      <button class="submit-btn" id="signupBtn">
         <i class="fas fa-user-check"></i> Sign Up as Candidate
       </button>
 
@@ -539,12 +545,12 @@
         <span>or</span>
       </div>
 
-      <button class="google-btn" id="signupGoogleBtn" onclick="googleLogin()">
+      <button class="google-btn" id="signupGoogleBtn">
         <i class="fab fa-google"></i> Sign up with Google
       </button>
 
       <div class="toggle">
-        Already have an account? <a onclick="showLogin()">Login here →</a>
+        Already have an account? <a id="showLoginLink">Login here →</a>
       </div>
       <div id="signupMsg" class="message hidden"></div>
     </div>
@@ -552,54 +558,22 @@
 </div>
 
 <script>
-  // ==================== FIXED BROWSER BACK BUTTON NAVIGATION ====================
-  // The issue was the forced history push that prevented normal back navigation.
-  // Now we properly handle navigation without breaking the browser's back button.
+  // ==================== FIXED: BACK TO HOME BUTTON ====================
+  // The back button now directly navigates to index.html with smooth transition
+  const backButton = document.getElementById('backButton');
   
-  // Store the original referrer to enable proper back navigation
-  let previousPage = document.referrer || null;
-  
-  // Function to handle back button click - navigates to previous page or landing page
-  function handleBackNavigation() {
-    // Check if there's a previous page in history that's not the current page
-    if (document.referrer && document.referrer !== window.location.href) {
-      // Use browser's native back functionality
-      window.history.back();
-    } else {
-      // If no referrer, navigate to the landing page (index)
-      // This maintains smooth transition effect
-      document.body.style.opacity = '0';
-      document.body.style.transition = 'opacity 0.3s ease';
-      setTimeout(() => {
-        window.location.href = 'index.html';
-      }, 250);
-    }
+  function navigateToHome() {
+    // Add fade-out effect for smooth transition
+    document.body.classList.add('fade-out');
+    
+    // Small delay to allow fade animation to play
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 200);
   }
   
-  // Override the problematic history.pushState that was breaking back button
-  // Instead of forcing a new history entry, we let the browser handle naturally
-  // Remove the old problematic code that pushed a new state
-  // We're NOT adding: history.pushState(null, null, location.href);
-  // And we're NOT adding: window.onpopstate = function () { history.go(1); };
-  
-  // Instead, we'll handle popstate gracefully to allow normal back navigation
-  let allowBackNavigation = true;
-  
-  window.addEventListener('popstate', function(event) {
-    // This fires when user clicks browser back button
-    // We allow the default behavior to happen naturally
-    // No forced forward navigation
-    if (allowBackNavigation) {
-      // Let the browser handle the back navigation normally
-      // We don't need to do anything here - it will go back naturally
-      console.log("Browser back button pressed - navigating naturally");
-    }
-  });
-  
-  // Remove any existing onpopstate override that might be causing issues
-  // The old code had: window.onpopstate = function () { history.go(1); }
-  // That was forcing forward navigation, breaking the back button!
-  // We've removed that problematic code.
+  // Attach click event to back button
+  backButton.addEventListener('click', navigateToHome);
   
   // ==================== CREATE FLOATING PARTICLES ====================
   function createParticles() {
@@ -618,68 +592,99 @@
   }
   createParticles();
 
+  // DOM Elements
+  const loginFormDiv = document.getElementById('loginForm');
+  const signupFormDiv = document.getElementById('signupForm');
+  const loginUsername = document.getElementById('loginUsername');
+  const loginPassword = document.getElementById('loginPassword');
+  const loginBtn = document.getElementById('loginBtn');
+  const signupUsername = document.getElementById('signupUsername');
+  const signupEmail = document.getElementById('signupEmail');
+  const signupPassword = document.getElementById('signupPassword');
+  const signupBtn = document.getElementById('signupBtn');
+  const googleBtn = document.getElementById('googleBtn');
+  const signupGoogleBtn = document.getElementById('signupGoogleBtn');
+  const showSignupLink = document.getElementById('showSignupLink');
+  const showLoginLink = document.getElementById('showLoginLink');
+  const loginMsgDiv = document.getElementById('loginMsg');
+  const signupMsgDiv = document.getElementById('signupMsg');
+
   // Show message helper
-  function showMessage(elementId, text, isError = true) {
-    const msgDiv = document.getElementById(elementId);
-    msgDiv.textContent = text;
-    msgDiv.className = `message ${isError ? 'error' : 'success'}`;
-    msgDiv.classList.remove('hidden');
+  function showMessage(element, text, isError = true) {
+    element.textContent = text;
+    element.className = `message ${isError ? 'error' : 'success'}`;
+    element.classList.remove('hidden');
     setTimeout(() => {
-      msgDiv.classList.add('hidden');
+      element.classList.add('hidden');
     }, 4000);
   }
 
   // Show loading state on button
-  function setButtonLoading(btn, loading) {
+  function setButtonLoading(btn, loading, originalText = null) {
     if (loading) {
       btn.disabled = true;
-      const originalText = btn.innerHTML;
-      btn.setAttribute('data-original', originalText);
+      if (!btn.getAttribute('data-original')) {
+        btn.setAttribute('data-original', btn.innerHTML);
+      }
       btn.innerHTML = `<i class="fas fa-spinner fa-pulse"></i> Processing...`;
     } else {
       btn.disabled = false;
-      btn.innerHTML = btn.getAttribute('data-original');
+      btn.innerHTML = btn.getAttribute('data-original') || originalText || btn.innerHTML;
     }
   }
 
-  // TOGGLE FUNCTIONS (preserve form state without breaking history)
+  // TOGGLE FUNCTIONS
   function showSignup() {
-    document.getElementById("loginForm").classList.add("hidden");
-    document.getElementById("signupForm").classList.remove("hidden");
-    document.getElementById("loginMsg").classList.add("hidden");
-    document.getElementById("signupMsg").classList.add("hidden");
+    loginFormDiv.classList.add('hidden');
+    signupFormDiv.classList.remove('hidden');
+    loginMsgDiv.classList.add('hidden');
+    signupMsgDiv.classList.add('hidden');
+    // Focus on first signup input
+    setTimeout(() => signupUsername.focus(), 100);
   }
 
   function showLogin() {
-    document.getElementById("signupForm").classList.add("hidden");
-    document.getElementById("loginForm").classList.remove("hidden");
-    document.getElementById("loginMsg").classList.add("hidden");
-    document.getElementById("signupMsg").classList.add("hidden");
+    signupFormDiv.classList.add('hidden');
+    loginFormDiv.classList.remove('hidden');
+    loginMsgDiv.classList.add('hidden');
+    signupMsgDiv.classList.add('hidden');
+    // Focus on username input
+    setTimeout(() => loginUsername.focus(), 100);
   }
+
+  // Attach toggle events
+  showSignupLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    showSignup();
+  });
+  
+  showLoginLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    showLogin();
+  });
 
   // SIGNUP FUNCTION
   function signup() {
-    const username = document.getElementById("signupUsername").value.trim();
-    const email = document.getElementById("signupEmail").value.trim();
-    const password = document.getElementById("signupPassword").value;
-    const btn = document.getElementById('signupBtn');
+    const username = signupUsername.value.trim();
+    const email = signupEmail.value.trim();
+    const password = signupPassword.value;
 
     if (!username || !email || !password) {
-      showMessage("signupMsg", "❌ Please fill in all fields", true);
+      showMessage(signupMsgDiv, "❌ Please fill in all fields", true);
       return;
     }
 
     if (password.length < 4) {
-      showMessage("signupMsg", "❌ Password must be at least 4 characters", true);
+      showMessage(signupMsgDiv, "❌ Password must be at least 4 characters", true);
       return;
     }
 
     if (!email.includes('@') || !email.includes('.')) {
-      showMessage("signupMsg", "❌ Please enter a valid email address", true);
+      showMessage(signupMsgDiv, "❌ Please enter a valid email address", true);
       return;
     }
 
-    setButtonLoading(btn, true);
+    setButtonLoading(signupBtn, true);
 
     setTimeout(() => {
       let users = JSON.parse(localStorage.getItem("users")) || [];
@@ -687,15 +692,15 @@
       const exists = users.find(u => u.username.toLowerCase() === username.toLowerCase());
 
       if (exists) {
-        showMessage("signupMsg", "❌ Username already taken. Please choose another.", true);
-        setButtonLoading(btn, false);
+        showMessage(signupMsgDiv, "❌ Username already taken. Please choose another.", true);
+        setButtonLoading(signupBtn, false);
         return;
       }
 
-      const emailExists = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+      const emailExists = users.find(u => u.email && u.email.toLowerCase() === email.toLowerCase());
       if (emailExists) {
-        showMessage("signupMsg", "❌ Email already registered. Please login.", true);
-        setButtonLoading(btn, false);
+        showMessage(signupMsgDiv, "❌ Email already registered. Please login.", true);
+        setButtonLoading(signupBtn, false);
         return;
       }
 
@@ -710,31 +715,30 @@
       users.push(newUser);
       localStorage.setItem("users", JSON.stringify(users));
 
-      showMessage("signupMsg", "✨ Candidate account created successfully! Redirecting to login...", false);
+      showMessage(signupMsgDiv, "✨ Candidate account created successfully! Redirecting to login...", false);
       
       setTimeout(() => {
-        setButtonLoading(btn, false);
-        document.getElementById("signupUsername").value = "";
-        document.getElementById("signupEmail").value = "";
-        document.getElementById("signupPassword").value = "";
+        setButtonLoading(signupBtn, false);
+        signupUsername.value = "";
+        signupEmail.value = "";
+        signupPassword.value = "";
         showLogin();
-        showMessage("loginMsg", "✅ Account created! Please login with your credentials.", false);
+        showMessage(loginMsgDiv, "✅ Account created! Please login with your credentials.", false);
       }, 1500);
     }, 600);
   }
 
   // LOGIN FUNCTION - redirects to candidate dashboard
   function login() {
-    const username = document.getElementById("loginUsername").value.trim();
-    const password = document.getElementById("loginPassword").value;
-    const btn = document.getElementById('loginBtn');
+    const username = loginUsername.value.trim();
+    const password = loginPassword.value;
 
     if (!username || !password) {
-      showMessage("loginMsg", "❌ Please enter username and password", true);
+      showMessage(loginMsgDiv, "❌ Please enter username and password", true);
       return;
     }
 
-    setButtonLoading(btn, true);
+    setButtonLoading(loginBtn, true);
 
     setTimeout(() => {
       let users = JSON.parse(localStorage.getItem("users")) || [];
@@ -746,8 +750,8 @@
       );
 
       if (!user) {
-        showMessage("loginMsg", "❌ Invalid credentials. Please sign up as a candidate first.", true);
-        setButtonLoading(btn, false);
+        showMessage(loginMsgDiv, "❌ Invalid credentials. Please sign up as a candidate first.", true);
+        setButtonLoading(loginBtn, false);
         return;
       }
 
@@ -759,10 +763,10 @@
         loggedInAt: new Date().toISOString()
       }));
 
-      showMessage("loginMsg", `🎉 Welcome back, ${user.username}! Redirecting to candidate dashboard...`, false);
+      showMessage(loginMsgDiv, `🎉 Welcome back, ${user.username}! Redirecting to candidate dashboard...`, false);
 
       setTimeout(() => {
-        setButtonLoading(btn, false);
+        setButtonLoading(loginBtn, false);
         // Use replace to avoid adding this page to history stack twice
         window.location.replace("candidate.html");
       }, 800);
@@ -770,7 +774,7 @@
   }
 
   // GOOGLE LOGIN
-  function googleLogin() {
+  function googleLoginHandler() {
     const btn = event.currentTarget;
     const originalHTML = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Connecting to Google...';
@@ -814,14 +818,18 @@
     }, 1000);
   }
 
+  // Attach event listeners
+  loginBtn.addEventListener('click', login);
+  signupBtn.addEventListener('click', signup);
+  googleBtn.addEventListener('click', googleLoginHandler);
+  signupGoogleBtn.addEventListener('click', googleLoginHandler);
+
   // Add Enter key support
   document.addEventListener('keypress', function(e) {
     if (e.key === 'Enter') {
-      const loginForm = document.getElementById('loginForm');
-      const signupForm = document.getElementById('signupForm');
-      if (!loginForm.classList.contains('hidden')) {
+      if (!loginFormDiv.classList.contains('hidden')) {
         login();
-      } else if (!signupForm.classList.contains('hidden')) {
+      } else if (!signupFormDiv.classList.contains('hidden')) {
         signup();
       }
     }
@@ -845,7 +853,7 @@
     } catch(e) {}
   }
   
-  console.log("TalentSync Candidate Portal ready — Browser back button now works correctly!");
+  console.log("TalentSync Candidate Portal ready — Back button now navigates to index.html");
 </script>
 
 </body>
