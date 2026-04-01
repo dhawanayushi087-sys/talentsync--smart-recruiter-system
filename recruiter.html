@@ -261,6 +261,12 @@
 
     .success-msg { color: #4ade80; margin-top: 12px; display: none; }
 
+    /* Fade out animation for logout */
+    .fade-out {
+      opacity: 0;
+      transition: opacity 0.25s ease-out;
+    }
+
     @media (max-width: 860px) {
       .sidebar { transform: translateX(-100%); }
       .sidebar.open { transform: translateX(0); }
@@ -621,7 +627,7 @@
     const container = document.getElementById('postedJobsContainer');
     if (!container) return;
     
-    // CRITICAL FIX: Only show jobs that belong to the current company
+    // Only show jobs that belong to the current company
     const companyJobs = recruiterJobs.filter(job => job.companyName && job.companyName.toLowerCase().includes(companyDomain.split('.')[0]) || 
       (job.companyName && job.companyName.toLowerCase() === companyDomain.split('.')[0]));
     
@@ -736,16 +742,25 @@
     }
   }
 
+  // ========== FIXED: LOGOUT REDIRECTS TO INDEX.HTML ==========
   function logout() {
+    // Clear recruiter session data
     localStorage.removeItem('recruiter_logged_in');
     localStorage.removeItem('recruiter_email');
     localStorage.removeItem('recruiter_name');
-    window.location.href = 'login.html';
+    
+    // Add fade-out effect for smooth transition
+    document.body.classList.add('fade-out');
+    
+    // Redirect to index.html after a short delay for animation
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 200);
   }
 
   function checkLoginState() {
     if (localStorage.getItem('recruiter_logged_in') !== 'true') {
-      window.location.href = 'login.html';
+      window.location.href = 'index.html';
     } else if (!companyDomain) {
       alert('Invalid session. Please login again.');
       logout();
